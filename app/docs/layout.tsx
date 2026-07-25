@@ -21,12 +21,13 @@ const sidebarTokens: CSSProperties = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <SidebarProvider style={sidebarTokens}>
-      <nav aria-label="Documentation">
-        <DocsSidebar id="docs-sidebar" tree={source.getPageTree() as never} />
-      </nav>
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-3 px-4">
+    <SidebarProvider
+      style={sidebarTokens}
+      className="[&_[data-slot=sidebar-gap]]:w-0!"
+    >
+      <DocsSidebar id="docs-sidebar" tree={source.getPageTree() as never} />
+      <SidebarInset className="min-w-0">
+        <header className="flex h-14 w-full items-center gap-3 px-6 transition-[padding] duration-200 ease-linear md:group-has-[[data-slot=sidebar][data-state=expanded]]/sidebar-wrapper:ps-[calc(var(--sidebar-width)+1.5rem)]">
           <DocsSidebarTrigger />
           <Link href="/docs" className="text-sm font-medium">
             23rd Docs

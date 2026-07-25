@@ -139,6 +139,7 @@ export function DocsSidebar({
   return (
     <Sidebar
       id={id}
+      aria-label="Documentation"
       variant="floating"
       collapsible="offcanvas"
       className={cn(className)}
