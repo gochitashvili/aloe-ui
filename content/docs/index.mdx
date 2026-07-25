@@ -1,0 +1,22 @@
+---
+title: Introduction
+description: Welcome to the docs. Edit this file or add more MDX pages under content/docs.
+---
+
+## Getting started
+
+This site is powered by **Fumadocs MDX** with the Base UI docs shell (`@fumadocs/base-ui`).
+
+Write pages as MDX in `content/docs`, then customize:
+
+- **Sidebar / nav** — `lib/layout.shared.tsx` and `app/docs/layout.tsx` (`DocsLayout`)
+- **Page chrome** — `app/docs/[[...slug]]/page.tsx` (`DocsPage`, title, TOC)
+- **MDX elements** — `components/mdx.tsx`
+
+Shadcn primitives (`Sidebar`, `Sheet`, `ScrollArea`, …) are installed under `components/ui` if you want a fully custom shell later.
+
+## Next steps
+
+- Add a page under `content/docs`
+- Update navigation via `meta.json` folders
+- Open [Getting Started](/docs/getting-started)

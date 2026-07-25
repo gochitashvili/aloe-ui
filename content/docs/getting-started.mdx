@@ -1,0 +1,31 @@
+---
+title: Getting Started
+description: How content, routing, and the docs UI fit together.
+---
+
+## Content
+
+MDX files live in `content/docs`. Frontmatter needs at least a `title`:
+
+```mdx
+---
+title: My Page
+description: Optional description
+---
+
+## Hello
+```
+
+## Routing
+
+Pages are served at `/docs/*` from `app/docs/[[...slug]]/page.tsx`. The page tree comes from `lib/source.ts`.
+
+## Customizing the UI
+
+| Piece | Where to edit |
+| --- | --- |
+| Site title / nav links | `lib/layout.shared.tsx` |
+| Docs sidebar layout | `app/docs/layout.tsx` |
+| Page title, TOC, body | `app/docs/[[...slug]]/page.tsx` |
+| MDX component map | `components/mdx.tsx` |
+| Shadcn sidebar kit | `components/ui/sidebar.tsx` |

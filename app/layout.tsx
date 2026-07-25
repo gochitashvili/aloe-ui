@@ -1,10 +1,24 @@
 import { Geist, Geist_Mono } from "next/font/google"
+import { RootProvider } from "fumadocs-ui/provider/next"
+import type { ReactNode } from "react"
+
+import { ThemeProvider } from "@/components/theme-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { Toaster } from "sonner"
+import { cn } from "@/lib/utils"
+import { source } from "@/lib/source"
+import { flattenPageTree } from "@/lib/tree"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
+export const metadata = {
+  title: "23rd Docs",
+  description:
+    "Documentation for the 23rd project. Built with Fumadocs MDX and Next.js.",
+  metadataBase: new URL("https://23rd.dev"),
+}
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -14,16 +28,35 @@ const fontMono = Geist_Mono({
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
+  const links = flattenPageTree(source.getPageTree()).map(
+    (item) => [item.title, item.url] as [string, string]
+  )
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "font-sans antialiased",
+        fontMono.variable,
+        geist.variable
+      )}
     >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="flex min-h-screen flex-col">
+        <ThemeProvider>
+          <RootProvider
+            search={{
+              links,
+            }}
+          >
+            <TooltipProvider>
+              {children}
+              <Toaster richColors position="bottom-right" />
+            </TooltipProvider>
+          </RootProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
