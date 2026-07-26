@@ -1,22 +1,22 @@
 ---
 title: Introduction
-description: Welcome to the docs. Edit this file or add more MDX pages under content/docs.
+description: Opinionated UI components for shippers — a shadcn registry by radiumcoders (Jay).
 ---
 
-## Getting started
+**23rd** is a [shadcn/ui](https://ui.shadcn.com) registry of opinionated UI components built for people who ship.
 
-This site is powered by **Fumadocs MDX** with the Base UI docs shell (`@fumadocs/base-ui`).
+Made by **radiumcoders** (aka **Jay**).
 
-Write pages as MDX in `content/docs`, then customize:
+## What this is
 
-- **Sidebar / nav** — `lib/layout.shared.tsx` and `app/docs/layout.tsx` (`DocsLayout`)
-- **Page chrome** — `app/docs/[[...slug]]/page.tsx` (`DocsPage`, title, TOC)
-- **MDX elements** — `components/mdx.tsx`
+A curated set of components with strong defaults — less boilerplate, clearer decisions, and a look that stays consistent across projects. Install what you need through the shadcn CLI, then customize in your own codebase like any other registry item.
 
-Shadcn primitives (`Sidebar`, `Sheet`, `ScrollArea`, …) are installed under `components/ui` if you want a fully custom shell later.
+## Why opinionated
+
+Most component kits hand you every option. 23rd picks a direction: spacing, radius, interaction patterns, and composition rules that already feel finished. You can still override anything — you just start from a sharper baseline.
 
 ## Next steps
 
-- Add a page under `content/docs`
-- Update navigation via `meta.json` folders
-- Open [Getting Started](/docs/getting-started)
+- [Getting Started](/docs/getting-started) — content, routing, and how the docs are put together
+- Browse components as they land in the registry
+- Add packages with `pnpm dlx shadcn@latest add …` once items are published

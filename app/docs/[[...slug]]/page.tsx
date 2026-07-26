@@ -2,6 +2,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import { DocsToc } from "@/components/docs-toc"
 import { getMDXComponents } from "@/components/mdx"
 import { source } from "@/lib/source"
 
@@ -13,7 +14,6 @@ export default async function Page(props: {
   if (!page) notFound()
 
   const MDX = page.data.body
-  const hasToc = page.data.toc.length > 0
 
   return (
     <div className="relative w-full px-6 py-10 md:py-14">
@@ -34,29 +34,7 @@ export default async function Page(props: {
           />
         </div>
       </article>
-      {hasToc ? (
-        <aside className="absolute inset-y-0 right-6 hidden w-52 xl:block">
-          <div className="sticky top-24 py-10 md:py-14">
-            <p className="text-sm font-medium text-muted-foreground">
-              On this page
-            </p>
-            <ul className="mt-3 space-y-2">
-              {page.data.toc.map((item) => (
-                <li key={item.url}>
-                  <a
-                    href={item.url}
-                    aria-label={String(item.title)}
-                    className="block text-sm text-muted-foreground transition-colors hover:text-foreground data-[depth=3]:ps-3 data-[depth=4]:ps-6"
-                    data-depth={item.depth}
-                  >
-                    {item.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </aside>
-      ) : null}
+      <DocsToc items={page.data.toc} />
     </div>
   )
 }
