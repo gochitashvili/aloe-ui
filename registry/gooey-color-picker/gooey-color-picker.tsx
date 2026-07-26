@@ -3,13 +3,11 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useRef,
   useState,
-  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react"
-import { RiCloseLine, RiDropFill } from "@remixicon/react"
+import { AnimatePresence, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -29,7 +27,31 @@ export type GooeyColorPickerProps = {
   label?: string
 }
 
-const DEFAULT_COLOR: GooeyColor = { h: 210, s: 90, l: 55, a: 1 }
+const DEFAULT_COLOR: GooeyColor = { h: 320, s: 90, l: 58, a: 1 }
+
+const spring = {
+  type: "spring" as const,
+  stiffness: 420,
+  damping: 32,
+  mass: 0.85,
+}
+
+const pathTransition = {
+  duration: 0.32,
+  ease: [0.22, 1, 0.36, 1] as const,
+}
+
+/** Stroked palette (closed) */
+const PALETTE_PATHS = [
+  "M12 3.5c3.7 0 6.75 2.85 6.75 6.5 0 1.2-.95 2.2-2.15 2.2h-.35c-.7 0-1.25.55-1.25 1.25V14c0 2.35-1.9 4.25-4.25 4.25S6.5 16.35 6.5 14 8.4 9.75 10.75 9.75h.5",
+  "M8.2 8.1a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Z",
+  "M11.2 6.4a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Z",
+  "M14.6 6.9a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Z",
+  "M16.9 9.2a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Z",
+]
+
+/** Close X (open) */
+const CLOSE_PATHS = ["M7 7L17 17", "M17 7L7 17"]
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n))
@@ -37,6 +59,40 @@ function clamp(n: number, min: number, max: number) {
 
 function toCss(color: GooeyColor) {
   return `hsla(${Math.round(color.h)} ${Math.round(color.s)}% ${Math.round(color.l)}% / ${Number(color.a.toFixed(3))})`
+}
+
+function hslToRgb(h: number, s: number, l: number) {
+  const sn = s / 100
+  const ln = l / 100
+  const c = (1 - Math.abs(2 * ln - 1)) * sn
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+  const m = ln - c / 2
+  let r = 0
+  let g = 0
+  let b = 0
+  if (h < 60) [r, g, b] = [c, x, 0]
+  else if (h < 120) [r, g, b] = [x, c, 0]
+  else if (h < 180) [r, g, b] = [0, c, x]
+  else if (h < 240) [r, g, b] = [0, x, c]
+  else if (h < 300) [r, g, b] = [x, 0, c]
+  else [r, g, b] = [c, 0, x]
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
+  }
+}
+
+function toHex(color: GooeyColor) {
+  const { r, g, b } = hslToRgb(color.h, color.s, color.l)
+  const rgb = [r, g, b]
+    .map((n) => n.toString(16).padStart(2, "0"))
+    .join("")
+  if (color.a >= 0.999) return `#${rgb}`
+  const a = Math.round(color.a * 255)
+    .toString(16)
+    .padStart(2, "0")
+  return `#${rgb}${a}`
 }
 
 function parseColor(input?: GooeyColor | string): GooeyColor {
@@ -109,12 +165,6 @@ function rgbToHsl(r: number, g: number, b: number): Omit<GooeyColor, "a"> {
   return { h: (h / 6) * 360, s: s * 100, l: l * 100 }
 }
 
-function angleFromPoint(x: number, y: number, cx: number, cy: number) {
-  const rad = Math.atan2(y - cy, x - cx)
-  const deg = (rad * 180) / Math.PI + 90
-  return (deg + 360) % 360
-}
-
 function useControllableColor(
   value: GooeyColorPickerProps["value"],
   defaultValue: GooeyColorPickerProps["defaultValue"],
@@ -137,6 +187,71 @@ function useControllableColor(
   return [color, setColor] as const
 }
 
+function bindDrag(onMove: (clientX: number, clientY: number) => void) {
+  return (event: ReactPointerEvent<HTMLElement>) => {
+    event.preventDefault()
+    const target = event.currentTarget
+    target.setPointerCapture(event.pointerId)
+    onMove(event.clientX, event.clientY)
+
+    function move(e: PointerEvent) {
+      onMove(e.clientX, e.clientY)
+    }
+    function up(e: PointerEvent) {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+      try {
+        target.releasePointerCapture(e.pointerId)
+      } catch {
+        // ignore
+      }
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+  }
+}
+
+function TriggerIcon({ open }: { open: boolean }) {
+  const paths = open ? CLOSE_PATHS : PALETTE_PATHS
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.g
+          key={open ? "close" : "palette"}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.12 }}
+        >
+          {paths.map((d, i) => (
+            <motion.path
+              key={`${open ? "c" : "p"}-${i}`}
+              d={d}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              exit={{ pathLength: 0, opacity: 0 }}
+              transition={{
+                ...pathTransition,
+                delay: i * 0.04,
+              }}
+            />
+          ))}
+        </motion.g>
+      </AnimatePresence>
+    </svg>
+  )
+}
+
 export function GooeyColorPicker({
   value,
   defaultValue,
@@ -144,7 +259,6 @@ export function GooeyColorPicker({
   className,
   label = "Color picker",
 }: GooeyColorPickerProps) {
-  const filterId = useId().replace(/:/g, "")
   const rootRef = useRef<HTMLDivElement>(null)
   const wheelRef = useRef<HTMLDivElement>(null)
   const alphaRef = useRef<HTMLDivElement>(null)
@@ -154,11 +268,37 @@ export function GooeyColorPicker({
   colorRef.current = color
   const css = toCss(color)
   const opaque = toCss({ ...color, a: 1 })
+  const hex = toHex(color)
+  const [hexDraft, setHexDraft] = useState(hex)
+  const hexFocused = useRef(false)
+
+  useEffect(() => {
+    if (!hexFocused.current) setHexDraft(hex)
+  }, [hex])
+
+  function commitHex(raw: string) {
+    const next = parseColor(raw.startsWith("#") ? raw : `#${raw}`)
+    const normalized = toHex(next)
+    if (/^#?[0-9a-f]{3,8}$/i.test(raw.trim())) {
+      setColor({ ...next })
+      setHexDraft(normalized)
+      return
+    }
+    setHexDraft(hex)
+  }
+
+  function togglePicker() {
+    setOpen((v) => !v)
+  }
+
+  function closePicker() {
+    setOpen(false)
+  }
 
   useEffect(() => {
     if (!open) return
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false)
+      if (event.key === "Escape") closePicker()
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
@@ -168,25 +308,28 @@ export function GooeyColorPicker({
     if (!open) return
     function onPointerDown(event: PointerEvent) {
       if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false)
+        closePicker()
       }
     }
     window.addEventListener("pointerdown", onPointerDown)
     return () => window.removeEventListener("pointerdown", onPointerDown)
   }, [open])
 
-  const updateHueFromPointer = useCallback(
+  const updateWheelFromPointer = useCallback(
     (clientX: number, clientY: number) => {
       const el = wheelRef.current
       if (!el) return
       const rect = el.getBoundingClientRect()
-      const h = angleFromPoint(
-        clientX,
-        clientY,
-        rect.left + rect.width / 2,
-        rect.top + rect.height / 2
-      )
-      setColor({ ...colorRef.current, h, s: 90, l: 55 })
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      const dx = clientX - cx
+      const dy = clientY - cy
+      const radius = rect.width / 2
+      const dist = Math.min(Math.hypot(dx, dy) / radius, 1)
+      const angle = (Math.atan2(dy, dx) * 180) / Math.PI
+      const h = (angle + 90 + 360) % 360
+      const s = clamp(dist * 100, 0, 100)
+      setColor({ ...colorRef.current, h, s, l: 55 })
     },
     [setColor]
   )
@@ -202,34 +345,10 @@ export function GooeyColorPicker({
     [setColor]
   )
 
-  function bindDrag(
-    onMove: (clientX: number, clientY: number) => void
-  ) {
-    return (event: ReactPointerEvent<HTMLElement>) => {
-      event.preventDefault()
-      const target = event.currentTarget
-      target.setPointerCapture(event.pointerId)
-      onMove(event.clientX, event.clientY)
-
-      function move(e: PointerEvent) {
-        onMove(e.clientX, e.clientY)
-      }
-      function up(e: PointerEvent) {
-        window.removeEventListener("pointermove", move)
-        window.removeEventListener("pointerup", up)
-        try {
-          target.releasePointerCapture(e.pointerId)
-        } catch {
-          // ignore
-        }
-      }
-      window.addEventListener("pointermove", move)
-      window.addEventListener("pointerup", up)
-    }
+  const wheelThumb = {
+    x: 50 + Math.sin((color.h * Math.PI) / 180) * color.s * 0.42,
+    y: 50 - Math.cos((color.h * Math.PI) / 180) * color.s * 0.42,
   }
-
-  const blobTransition =
-    "transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 280ms ease"
 
   return (
     <div
@@ -237,143 +356,94 @@ export function GooeyColorPicker({
       data-slot="gooey-color-picker"
       data-open={open ? "true" : "false"}
       className={cn(
-        "relative inline-flex h-72 w-44 items-end justify-center select-none",
+        "relative inline-flex h-12 w-48 items-end justify-center select-none",
         className
       )}
     >
-      <svg width="0" height="0" className="absolute" aria-hidden>
-        <defs>
-          <filter
-            id={`gooey-${filterId}`}
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-            colorInterpolationFilters="sRGB"
-          >
-            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"
-              result="goo"
-            />
-            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-          </filter>
-        </defs>
-      </svg>
-
-      {/* Gooey fill layer — solid blobs that melt together */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{ filter: `url(#gooey-${filterId})` }}
+      <motion.div
+        data-gcp-panel
+        aria-hidden={!open}
+        className="absolute bottom-15 left-1/2 z-10 flex w-48 flex-col items-center overflow-hidden border border-white/15 bg-black p-3 shadow-[0_18px_50px_-20px_rgba(0,0,0,0.65)]"
+        style={{
+          borderRadius: "6rem 6rem 1.35rem 1.35rem",
+          transformOrigin: "bottom center",
+          x: "-50%",
+        }}
+        initial={false}
+        animate={
+          open
+            ? {
+                opacity: 1,
+                scaleX: 1,
+                scaleY: 1,
+                y: 0,
+                pointerEvents: "auto" as const,
+              }
+            : {
+                opacity: 0,
+                scaleX: 0.22,
+                scaleY: 0.14,
+                y: 12,
+                pointerEvents: "none" as const,
+              }
+        }
+        transition={spring}
       >
-        {/* Bottom-left swatch */}
-        <div
-          className="absolute bottom-0 left-[calc(50%-2.75rem)] size-12 rounded-full"
-          style={{ background: css }}
-        />
-        {/* Bottom-right close — only when open */}
-        <div
-          className="absolute bottom-0 left-[calc(50%+0.25rem)] size-12 rounded-full bg-foreground"
-          style={{
-            opacity: open ? 1 : 0,
-            transform: open
-              ? "translate(0, 0) scale(1)"
-              : "translate(-1.5rem, 0) scale(0.4)",
-            transition: blobTransition,
-          }}
-        />
-        {/* Alpha capsule */}
-        <div
-          className="absolute bottom-17 left-1/2 h-11 w-36 -translate-x-1/2 rounded-full"
-          style={{
-            background: css,
-            opacity: open ? 1 : 0,
-            transform: open
-              ? "translate(-50%, 0) scale(1)"
-              : "translate(-50%, 3.5rem) scale(0.35)",
-            transition: blobTransition,
-          }}
-        />
-        {/* Hue circle */}
-        <div
-          className="absolute bottom-33 left-1/2 size-36 -translate-x-1/2 rounded-full"
-          style={{
-            background: opaque,
-            opacity: open ? 1 : 0,
-            transform: open
-              ? "translate(-50%, 0) scale(1)"
-              : "translate(-50%, 7rem) scale(0.28)",
-            transition: blobTransition,
-          }}
-        />
-      </div>
-
-      {/* Interactive layer */}
-      <div className="relative z-10 size-full">
-        {/* Hue wheel — top circle */}
         <div
           ref={wheelRef}
           role="slider"
           tabIndex={open ? 0 : -1}
-          aria-label="Hue"
-          aria-valuemin={0}
-          aria-valuemax={360}
-          aria-valuenow={Math.round(color.h)}
-          aria-hidden={!open}
+          aria-label="Color"
+          aria-valuetext={`hue ${Math.round(color.h)}, saturation ${Math.round(color.s)}`}
           className={cn(
-            "absolute bottom-33 left-1/2 size-36 -translate-x-1/2 touch-none rounded-full outline-none",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            !open && "pointer-events-none"
+            "relative size-40 shrink-0 touch-none rounded-full outline-none",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           )}
           style={{
-            opacity: open ? 1 : 0,
-            transform: open
-              ? "translate(-50%, 0) scale(1)"
-              : "translate(-50%, 7rem) scale(0.28)",
-            transition: blobTransition,
             background: `
-              radial-gradient(circle at center, hsl(0 0% 100%) 0 30%, transparent 31%),
+              radial-gradient(circle at center, #fff 0%, transparent 62%),
               conic-gradient(
                 from 0deg,
-                hsl(0 90% 55%),
-                hsl(60 90% 55%),
-                hsl(120 90% 55%),
-                hsl(180 90% 55%),
-                hsl(240 90% 55%),
-                hsl(300 90% 55%),
-                hsl(360 90% 55%)
+                hsl(0 100% 50%),
+                hsl(60 100% 50%),
+                hsl(120 100% 50%),
+                hsl(180 100% 50%),
+                hsl(240 100% 50%),
+                hsl(300 100% 50%),
+                hsl(360 100% 50%)
               )
             `,
-            boxShadow:
-              "inset 0 0 0 1px color-mix(in oklch, white 35%, transparent)",
           }}
-          onPointerDown={bindDrag((x, y) => updateHueFromPointer(x, y))}
+          onPointerDown={bindDrag((x, y) => updateWheelFromPointer(x, y))}
           onKeyDown={(event) => {
-            if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+            if (event.key === "ArrowLeft") {
               event.preventDefault()
               setColor({ ...color, h: (color.h + 350) % 360 })
             }
-            if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+            if (event.key === "ArrowRight") {
               event.preventDefault()
               setColor({ ...color, h: (color.h + 10) % 360 })
+            }
+            if (event.key === "ArrowUp") {
+              event.preventDefault()
+              setColor({ ...color, s: clamp(color.s + 5, 0, 100) })
+            }
+            if (event.key === "ArrowDown") {
+              event.preventDefault()
+              setColor({ ...color, s: clamp(color.s - 5, 0, 100) })
             }
           }}
         >
           <span
-            className="pointer-events-none absolute left-1/2 top-1/2 size-3 rounded-full border-2 border-white shadow-sm"
-            style={
-              {
-                transform: `translate(-50%, -50%) rotate(${color.h}deg) translateY(-2.85rem)`,
-                background: opaque,
-              } as CSSProperties
-            }
+            className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.25)]"
+            style={{
+              left: `${wheelThumb.x}%`,
+              top: `${wheelThumb.y}%`,
+              background: opaque,
+            }}
           />
         </div>
 
-        {/* Alpha capsule — middle rounded bar */}
         <div
           ref={alphaRef}
           role="slider"
@@ -382,31 +452,12 @@ export function GooeyColorPicker({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(color.a * 100)}
-          aria-hidden={!open}
           className={cn(
-            "absolute bottom-17 left-1/2 h-11 w-36 -translate-x-1/2 touch-none overflow-hidden rounded-full outline-none",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            !open && "pointer-events-none"
+            "relative mt-3 h-9 w-full shrink-0 touch-none overflow-hidden rounded-xl outline-none ring-1 ring-white/10",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           )}
           style={{
-            opacity: open ? 1 : 0,
-            transform: open
-              ? "translate(-50%, 0) scale(1)"
-              : "translate(-50%, 3.5rem) scale(0.35)",
-            transition: blobTransition,
-            backgroundImage: `
-              linear-gradient(to right, transparent, ${opaque}),
-              linear-gradient(45deg, #c4c4c4 25%, transparent 25%),
-              linear-gradient(-45deg, #c4c4c4 25%, transparent 25%),
-              linear-gradient(45deg, transparent 75%, #c4c4c4 75%),
-              linear-gradient(-45deg, transparent 75%, #c4c4c4 75%)
-            `,
-            backgroundSize:
-              "100% 100%, 10px 10px, 10px 10px, 10px 10px, 10px 10px",
-            backgroundPosition: "0 0, 0 0, 0 5px, 5px -5px, -5px 0",
-            backgroundColor: "#fff",
-            boxShadow:
-              "inset 0 0 0 1px color-mix(in oklch, black 12%, transparent)",
+            background: `linear-gradient(to right, transparent, ${opaque})`,
           }}
           onPointerDown={bindDrag((x) => updateAlphaFromPointer(x))}
           onKeyDown={(event) => {
@@ -421,65 +472,63 @@ export function GooeyColorPicker({
           }}
         >
           <span
-            className="pointer-events-none absolute top-1/2 size-3.5 -translate-y-1/2 rounded-full border-2 border-white shadow-md ring-1 ring-black/10"
+            className="pointer-events-none absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.2)]"
             style={{
-              left: `calc(${color.a * 100}% - 0.45rem)`,
+              left: `${color.a * 100}%`,
               background: css,
             }}
           />
         </div>
 
-        {/* Bottom pair: swatch trigger + close */}
-        <button
-          type="button"
-          aria-label={label}
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          className={cn(
-            "absolute bottom-0 flex size-12 items-center justify-center rounded-full text-white outline-none",
-            "transition-[left,transform] duration-420 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            "active:scale-[0.96]",
-            open ? "left-[calc(50%-2.75rem)]" : "left-1/2 -translate-x-1/2"
-          )}
-          style={{
-            background: css,
-            boxShadow:
-              "inset 0 0 0 2px color-mix(in oklch, white 40%, transparent)",
-          }}
-          onClick={() => setOpen(true)}
-        >
-          {open ? (
-            <RiDropFill className="size-5 opacity-90" />
-          ) : (
-            <span className="sr-only">{label}</span>
-          )}
-        </button>
+        <label className="mt-3 flex w-full items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
+          <span
+            className="size-3.5 shrink-0 rounded-full ring-1 ring-white/25"
+            style={{ background: css }}
+            aria-hidden
+          />
+          <input
+            type="text"
+            spellCheck={false}
+            aria-label="Hex color"
+            tabIndex={open ? 0 : -1}
+            value={hexDraft}
+            onFocus={() => {
+              hexFocused.current = true
+            }}
+            onChange={(event) => setHexDraft(event.target.value)}
+            onBlur={() => {
+              hexFocused.current = false
+              commitHex(hexDraft)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.currentTarget.blur()
+              }
+              if (event.key === "Escape") {
+                setHexDraft(hex)
+                event.currentTarget.blur()
+              }
+            }}
+            className="min-w-0 flex-1 bg-transparent font-mono text-sm text-white outline-none placeholder:text-white/40"
+          />
+        </label>
+      </motion.div>
 
-        <button
-          type="button"
-          aria-label="Close color picker"
-          tabIndex={open ? 0 : -1}
-          aria-hidden={!open}
-          className={cn(
-            "absolute bottom-0 left-[calc(50%+0.25rem)] flex size-12 items-center justify-center rounded-full",
-            "bg-foreground text-background outline-none",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            "active:scale-[0.96]",
-            !open && "pointer-events-none"
-          )}
-          style={{
-            opacity: open ? 1 : 0,
-            transform: open
-              ? "translate(0, 0) scale(1)"
-              : "translate(-1.5rem, 0) scale(0.4)",
-            transition: blobTransition,
-          }}
-          onClick={() => setOpen(false)}
-        >
-          <RiCloseLine className="size-5" />
-        </button>
-      </div>
+      <motion.button
+        type="button"
+        aria-label={open ? "Close color picker" : label}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        className={cn(
+          "relative z-20 flex size-12 items-center justify-center rounded-full border border-white/20 bg-black text-white outline-none",
+          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        )}
+        whileTap={{ scale: 0.94 }}
+        transition={spring}
+        onClick={togglePicker}
+      >
+        <TriggerIcon open={open} />
+      </motion.button>
     </div>
   )
 }

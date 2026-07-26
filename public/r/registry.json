@@ -6,9 +6,9 @@
     {
       "name": "gooey-color-picker",
       "title": "Gooey Color Picker",
-      "description": "A floating color picker that expands from a swatch into hue and alpha blobs joined by an SVG gooey filter.",
+      "description": "A floating color picker with a circular hue wheel, alpha slider, hex field, and motion-powered open/close.",
       "dependencies": [
-        "@remixicon/react"
+        "motion"
       ],
       "files": [
         {
