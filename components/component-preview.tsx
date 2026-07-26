@@ -39,7 +39,7 @@ export function ComponentPreview({
       <div className={cn("p-1", label && "pt-0")}>
         <div
           className={cn(
-            "relative flex min-h-[25svh] w-full flex-wrap gap-4 rounded-[calc(var(--radius-2xl)-2px)] bg-background p-8 ring-1 ring-border/80",
+            "relative flex min-h-[36svh] w-full flex-wrap gap-4 rounded-[calc(var(--radius-2xl)-2px)] bg-background p-8 ring-1 ring-border/80",
             align === "center" && "items-center justify-center",
             align === "start" && "items-start justify-start",
             align === "end" && "items-end justify-end"
