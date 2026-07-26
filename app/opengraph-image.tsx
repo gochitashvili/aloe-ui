@@ -29,17 +29,27 @@ export default function OpenGraphImage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 96,
-            height: 96,
-            borderRadius: 24,
-            background: "#fafafa",
-            color: "#0a0a0a",
-            fontSize: 48,
-            fontWeight: 700,
+            width: 120,
+            height: 120,
             marginBottom: 32,
           }}
         >
-          23
+          <svg
+            width="120"
+            height="120"
+            viewBox="0 0 200 200"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="200" height="200" rx="11" fill="white" />
+            <path
+              d="M21.5 30H163.5L21.5 128.5L177.5 96.5V136.5V186H21.5"
+              stroke="black"
+              strokeWidth="8"
+            />
+            <path d="M70 7H90V192H70V7Z" fill="black" />
+            <path d="M110 7H130V192H110V7Z" fill="black" />
+          </svg>
         </div>
         <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: "-0.04em" }}>
           23rd Docs

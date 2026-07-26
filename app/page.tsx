@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { buttonVariants } from "@/components/ui/button"
+import { Logo } from "@/components/logo"
 import { cn } from "@/lib/utils"
 
 export default function Page() {
@@ -8,6 +9,7 @@ export default function Page() {
     <div className="flex min-h-svh p-6">
       <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
         <div>
+          <Logo className="mb-4 size-12 rounded-md" />
           <h1 className="font-medium">Docs ready</h1>
           <p>
             Fumadocs MDX is wired up. Open the docs shell to edit sidebar and

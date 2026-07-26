@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react"
 import Link from "next/link"
 
 import { source } from "@/lib/source"
+import { Logo } from "@/components/logo"
 import { DocsSidebar } from "@/components/docs-sidebar"
 import { DocsSidebarTrigger } from "@/components/docs-sidebar-trigger"
 import { SearchTrigger } from "@/components/search-trigger"
@@ -29,7 +30,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       <SidebarInset className="min-w-0">
         <header className="flex h-14 w-full items-center gap-3 px-6 transition-[padding] duration-200 ease-linear md:group-has-[[data-slot=sidebar][data-state=expanded]]/sidebar-wrapper:ps-[calc(var(--sidebar-width)+1.5rem)]">
           <DocsSidebarTrigger />
-          <Link href="/docs" className="text-sm font-medium">
+          <Link href="/docs" className="flex items-center gap-2 text-sm font-medium">
+            <Logo className="size-6" cornerRadius={4} />
             23rd Docs
           </Link>
           <div className="ml-auto">
