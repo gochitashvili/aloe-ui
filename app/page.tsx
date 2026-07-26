@@ -1,31 +1,20 @@
-import Link from "next/link"
-
-import { buttonVariants } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { cn } from "@/lib/utils"
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <Logo className="mb-4 size-12 rounded-md" />
-          <h1 className="font-medium">Docs ready</h1>
-          <p>
-            Fumadocs MDX is wired up. Open the docs shell to edit sidebar and
-            page layout later.
-          </p>
-          <Link
-            href="/docs"
-            className={cn(buttonVariants({ variant: "default" }), "mt-2")}
-          >
-            Open docs
-          </Link>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
+    <main className="flex min-h-svh flex-col items-center justify-center bg-background px-6">
+      <div className="flex flex-col items-center text-center">
+        <Logo
+          className="size-20 animate-in fade-in zoom-in-95 duration-700 fill-mode-both sm:size-24"
+          cornerRadius={8}
+        />
+        <h1 className="mt-8 animate-in fade-in slide-in-from-bottom-2 fill-mode-both text-4xl font-semibold tracking-tight duration-700 delay-150 sm:text-5xl">
+          23rd
+        </h1>
+        <p className="mt-3 max-w-sm animate-in fade-in slide-in-from-bottom-2 fill-mode-both text-base text-muted-foreground duration-700 delay-300">
+          Coming soon.
+        </p>
       </div>
-    </div>
+    </main>
   )
 }

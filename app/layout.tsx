@@ -12,9 +12,8 @@ import { flattenPageTree } from "@/lib/tree"
 import "./globals.css"
 
 export const metadata = {
-  title: "23rd Docs",
-  description:
-    "Documentation for the 23rd project. Built with Fumadocs MDX and Next.js.",
+  title: "23rd",
+  description: "23rd — coming soon.",
   metadataBase: new URL("https://23rd.dev"),
 }
 

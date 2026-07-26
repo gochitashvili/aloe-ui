@@ -52,10 +52,10 @@ export default function OpenGraphImage() {
           </svg>
         </div>
         <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: "-0.04em" }}>
-          23rd Docs
+          23rd
         </div>
         <div style={{ fontSize: 28, color: "#a1a1aa", marginTop: 16 }}>
-          Documentation and guides
+          Coming soon
         </div>
       </div>
     ),
