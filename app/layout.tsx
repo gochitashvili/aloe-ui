@@ -13,7 +13,7 @@ import "./globals.css"
 
 export const metadata = {
   title: "23rd",
-  description: "23rd — coming soon.",
+  description: "23rd.dev — opinionated components for shippers. Coming soon.",
   metadataBase: new URL("https://23rd.dev"),
 }
 

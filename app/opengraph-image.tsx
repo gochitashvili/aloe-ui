@@ -55,7 +55,7 @@ export default function OpenGraphImage() {
           23rd
         </div>
         <div style={{ fontSize: 28, color: "#a1a1aa", marginTop: 16 }}>
-          Coming soon
+          Opinionated components for shippers
         </div>
       </div>
     ),
