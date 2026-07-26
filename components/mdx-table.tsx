@@ -17,7 +17,7 @@ export function MdxTable({
       className="not-prose my-6 w-full overflow-hidden rounded-2xl bg-muted/50"
     >
       <div className="bg-muted/50 p-1">
-        <div className="overflow-x-auto rounded-[calc(var(--radius-2xl)-2px)] ring-[1px] ring-border bg-background shadow-none">
+        <div className="overflow-x-auto rounded-[calc(var(--radius-2xl)-2px)] ring-[1px] ring-border/80 bg-background shadow-none">
           <table
             className={cn("w-full caption-bottom text-sm", className)}
             {...props}
