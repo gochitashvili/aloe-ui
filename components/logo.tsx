@@ -1,10 +1,12 @@
 import type { SVGProps } from "react"
 
+import { cn } from "@/lib/utils"
+
 type LogoProps = SVGProps<SVGSVGElement> & {
   cornerRadius?: number
 }
 
-export function Logo({ cornerRadius = 11, ...props }: LogoProps) {
+export function Logo({ cornerRadius = 11, className, ...props }: LogoProps) {
   return (
     <svg
       width="200"
@@ -14,6 +16,7 @@ export function Logo({ cornerRadius = 11, ...props }: LogoProps) {
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="23rd logo"
+      className={cn("dark:invert", className)}
       {...props}
     >
       <rect width="200" height="200" rx={cornerRadius} fill="white" />
