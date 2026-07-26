@@ -42,14 +42,14 @@ export function ComponentPreview({
       <div className={cn("p-1", label && "pt-0")}>
         <div
           className={cn(
-            "relative flex min-h-[36svh] w-full flex-wrap gap-4 rounded-[calc(var(--radius-2xl)-2px)] bg-background p-8 ring-1 ring-border/80",
+            "relative flex min-h-[36svh] w-full flex-wrap gap-4 overflow-hidden rounded-[calc(var(--radius-2xl)-2px)] bg-background p-8 ring-1 ring-border/80",
             align === "center" && "items-center justify-center",
             align === "start" && "items-start justify-start",
             align === "end" && "items-end justify-end",
             stageClassName
           )}
         >
-          <div className="relative z-10 flex w-full max-w-full flex-wrap items-center justify-center gap-3">
+          <div className="relative z-10 flex w-full max-w-full flex-wrap items-center justify-center gap-3 overflow-hidden rounded-[inherit]">
             {children}
           </div>
         </div>

@@ -18,6 +18,22 @@
         }
       ],
       "type": "registry:ui"
+    },
+    {
+      "name": "radiant-lines",
+      "title": "Radiant Lines",
+      "description": "A hyperspace starfield background — colored streaks radiate from the center, with warp speed driven by scroll velocity via Motion.",
+      "dependencies": [
+        "motion"
+      ],
+      "files": [
+        {
+          "path": "registry/radiant-lines/radiant-lines.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/radiant-lines.tsx"
+        }
+      ],
+      "type": "registry:ui"
     }
   ]
 }
