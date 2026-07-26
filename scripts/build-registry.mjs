@@ -1,41 +1,24 @@
 import { spawnSync } from "node:child_process"
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs"
-import { join, relative } from "node:path"
-import { fileURLToPath } from "node:url"
+import { writeFileSync } from "node:fs"
 
-const root = join(fileURLToPath(new URL(".", import.meta.url)), "..")
-const registryDir = join(root, "registry")
-const rootRegistryPath = join(root, "registry.json")
-
-function discoverIncludes() {
-  if (!existsSync(registryDir)) {
-    return []
-  }
-
-  return readdirSync(registryDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => join(registryDir, entry.name, "registry.json"))
-    .filter((path) => existsSync(path))
-    .map((path) => relative(root, path).replaceAll("\\", "/"))
-    .sort()
-}
+import {
+  ROOT,
+  ROOT_REGISTRY_PATH,
+  composeRootRegistry,
+  discoverIncludes,
+  readRootRegistry,
+  serializeRegistry,
+} from "./registry-lib.mjs"
 
 function writeRootRegistry(includes) {
-  const current = JSON.parse(readFileSync(rootRegistryPath, "utf8"))
-  const next = {
-    $schema:
-      current.$schema ?? "https://ui.shadcn.com/schema/registry.json",
-    name: current.name ?? "23rd",
-    homepage: current.homepage ?? "https://23rd.dev",
-    include: includes,
-  }
-  writeFileSync(rootRegistryPath, `${JSON.stringify(next, null, 2)}\n`)
+  const next = composeRootRegistry(readRootRegistry(), includes)
+  writeFileSync(ROOT_REGISTRY_PATH, serializeRegistry(next))
   return next
 }
 
 function run(commandLine) {
   const result = spawnSync(commandLine, {
-    cwd: root,
+    cwd: ROOT,
     stdio: "inherit",
     shell: true,
   })
