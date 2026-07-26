@@ -34,6 +34,19 @@
         }
       ],
       "type": "registry:ui"
+    },
+    {
+      "name": "shader-gradient",
+      "title": "Shader Gradient",
+      "description": "A subtle animated WebGL gradient wash that follows shadcn light/dark theme — soft color blobs and optional pointer follow.",
+      "files": [
+        {
+          "path": "registry/shader-gradient/shader-gradient.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/shader-gradient.tsx"
+        }
+      ],
+      "type": "registry:ui"
     }
   ]
 }

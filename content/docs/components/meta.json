@@ -1,4 +1,4 @@
 {
   "title": "Components",
-  "pages": ["gooey-color-picker", "radiant-lines"]
+  "pages": ["gooey-color-picker", "radiant-lines", "shader-gradient"]
 }
