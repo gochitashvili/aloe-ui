@@ -49,7 +49,7 @@ export function ComponentPreview({
             stageClassName
           )}
         >
-          <div className="relative z-10 flex w-full max-w-full flex-wrap items-center justify-center gap-3 overflow-hidden rounded-[inherit]">
+          <div className="relative z-10 flex w-full max-w-full flex-wrap items-center justify-center gap-3">
             {children}
           </div>
         </div>
