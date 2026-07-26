@@ -28,7 +28,7 @@ export function DocsToc({ items }: { items: TOCItemType[] }) {
 }
 
 function TocList({ items }: { items: TOCItemType[] }) {
-  const containerRef = useRef<HTMLNavElement>(null)
+  const containerRef = useRef<HTMLElement>(null)
 
   return (
     <nav ref={containerRef} className="relative ms-0.5">
@@ -61,7 +61,7 @@ function TocList({ items }: { items: TOCItemType[] }) {
 function TocIndicator({
   containerRef,
 }: {
-  containerRef: RefObject<HTMLNavElement | null>
+  containerRef: RefObject<HTMLElement | null>
 }) {
   const items = useItems()
   const [thumb, setThumb] = useState({ top: 0, height: 0, visible: false })
