@@ -1,0 +1,60 @@
+---
+title: Gooey Color Picker
+description: A floating color picker that expands from a swatch into hue and alpha blobs joined by an SVG gooey filter.
+---
+
+import { GooeyColorPicker } from "@/registry/gooey-color-picker/gooey-color-picker"
+
+A compact swatch that opens into a stacked cluster: circular hue wheel on top, horizontal alpha capsule in the middle, and swatch + close circles at the bottom — melted together with an SVG gooey filter.
+
+<ComponentPreview title="Gooey Color Picker" stageClassName="min-h-[52svh] items-end pb-10">
+  <GooeyColorPicker defaultValue="hsla(210 90% 55% / 1)" />
+</ComponentPreview>
+
+## Installation
+
+Add the `@23rd` registry, then install the component:
+
+```bash
+pnpm dlx shadcn@latest registry add @23rd=https://23rd.dev/r/{name}.json
+```
+
+<CliCommand command="shadcn@latest add @23rd/gooey-color-picker" />
+
+Or install straight from the public GitHub source registry:
+
+<CliCommand
+  npm="npx shadcn@latest add radiumcoders/23rd.dev/gooey-color-picker"
+  pnpm="pnpm dlx shadcn@latest add radiumcoders/23rd.dev/gooey-color-picker"
+  yarn="yarn dlx shadcn@latest add radiumcoders/23rd.dev/gooey-color-picker"
+  bun="bunx --bun shadcn@latest add radiumcoders/23rd.dev/gooey-color-picker"
+/>
+
+## Usage
+
+```tsx
+import { GooeyColorPicker } from "@/components/ui/gooey-color-picker"
+
+export function Example() {
+  return (
+    <GooeyColorPicker
+      defaultValue={{ h: 210, s: 90, l: 55, a: 1 }}
+      onChange={(color, css) => {
+        console.log(color, css)
+      }}
+    />
+  )
+}
+```
+
+## Props
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `value` | `GooeyColor \| string` | — |
+| `defaultValue` | `GooeyColor \| string` | `{ h: 210, s: 90, l: 55, a: 1 }` |
+| `onChange` | `(color: GooeyColor, css: string) => void` | — |
+| `label` | `string` | `"Color picker"` |
+| `className` | `string` | — |
+
+`GooeyColor` is `{ h, s, l, a }` (hue 0–360, saturation/lightness 0–100, alpha 0–1). String values accept hex or `hsl`/`hsla`.

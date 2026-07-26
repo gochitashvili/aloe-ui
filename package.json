@@ -5,12 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm registry:build && next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "postinstall": "fumadocs-mdx",
-    "typecheck": "fumadocs-mdx && tsc --noEmit"
+    "typecheck": "fumadocs-mdx && tsc --noEmit",
+    "registry:build": "node scripts/build-registry.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

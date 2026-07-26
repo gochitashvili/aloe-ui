@@ -3,6 +3,28 @@
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
+// next-themes injects an inline <script> to prevent theme flicker.
+// React 19 warns about script tags inside components — false positive;
+// the script runs correctly during SSR.
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  const originalError = console.error
+  console.error = (...args: unknown[]) => {
+    const message = args
+      .map((arg) => {
+        if (typeof arg === "string") return arg
+        if (arg instanceof Error) return arg.message
+        return ""
+      })
+      .join(" ")
+
+    if (message.includes("Encountered a script tag")) {
+      return
+    }
+
+    originalError.apply(console, args)
+  }
+}
+
 function ThemeProvider({
   children,
   ...props

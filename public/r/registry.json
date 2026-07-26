@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "23rd",
+  "homepage": "https://23rd.dev",
+  "items": [
+    {
+      "name": "gooey-color-picker",
+      "title": "Gooey Color Picker",
+      "description": "A floating color picker that expands from a swatch into hue and alpha blobs joined by an SVG gooey filter.",
+      "dependencies": [
+        "@remixicon/react"
+      ],
+      "files": [
+        {
+          "path": "registry/gooey-color-picker/gooey-color-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/gooey-color-picker.tsx"
+        }
+      ],
+      "type": "registry:ui"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "23rd",
+  "homepage": "https://23rd.dev",
+  "include": [
+    "registry/gooey-color-picker/registry.json"
+  ]
+}
