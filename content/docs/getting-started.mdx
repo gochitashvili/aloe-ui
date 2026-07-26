@@ -3,6 +3,8 @@ title: Getting Started
 description: How content, routing, and the docs UI fit together.
 ---
 
+import { Button } from "@/components/ui/button"
+
 ## Content
 
 MDX files live in `content/docs`. Frontmatter needs at least a `title`:
@@ -19,6 +21,22 @@ description: Optional description
 ## Routing
 
 Pages are served at `/docs/*` from `app/docs/[[...slug]]/page.tsx`. The page tree comes from `lib/source.ts`.
+
+## Component preview
+
+Live examples use `ComponentPreview` — full content width, roughly a quarter of the viewport tall:
+
+```tsx
+<ComponentPreview title="Button">
+  <Button>Click me</Button>
+</ComponentPreview>
+```
+
+<ComponentPreview title="Button">
+  <Button>Default</Button>
+  <Button variant="outline">Outline</Button>
+  <Button variant="secondary">Secondary</Button>
+</ComponentPreview>
 
 ## Customizing the UI
 
