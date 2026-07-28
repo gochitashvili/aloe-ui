@@ -4,6 +4,8 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import { DocsSidebarTrigger } from "@/components/docs-sidebar-trigger"
+import { Logo } from "@/components/logo"
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
@@ -37,84 +40,95 @@ function isFolder(node: TreeNode): node is FolderNode {
   return node.type === "folder"
 }
 
+function isSeparator(node: TreeNode): node is SeparatorNode {
+  return node.type === "separator"
+}
+
 function isCurrent(pathname: string, url: string) {
   return pathname === url
 }
 
-function NavList({ nodes, pathname }: { nodes: TreeNode[]; pathname: string }) {
+function PageItem({
+  node,
+  pathname,
+  indented = false,
+}: {
+  node: PageNode
+  pathname: string
+  indented?: boolean
+}) {
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        render={
+          <Link href={node.url} aria-label={String(node.name ?? "Page")} />
+        }
+        isActive={isCurrent(pathname, node.url)}
+        className={cn(
+          "hover:bg-foreground/5 data-active:bg-foreground/10",
+          indented && "pl-6"
+        )}
+      >
+        <span className="truncate">{node.name}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
+function SeparatorItem({ node }: { node: SeparatorNode }) {
+  if (node.name == null || node.name === "") {
+    return <SidebarSeparator className="my-2" />
+  }
+
+  return (
+    <SidebarGroupLabel className="mt-3 first:mt-0 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+      {node.name}
+    </SidebarGroupLabel>
+  )
+}
+
+function NavList({
+  nodes,
+  pathname,
+  indented = false,
+}: {
+  nodes: TreeNode[]
+  pathname: string
+  indented?: boolean
+}) {
   return (
     <SidebarMenu>
       {nodes.map((node, i) => {
         if (isPage(node)) {
           return (
-            <SidebarMenuItem key={node.url ?? i}>
-              <SidebarMenuButton
-                render={
-                  <Link
-                    href={node.url}
-                    aria-label={String(node.name ?? "Page")}
-                  />
-                }
-                isActive={isCurrent(pathname, node.url)}
-                className="hover:bg-foreground/5 data-active:bg-foreground/10"
-              >
-                <span className="truncate">{node.name}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <PageItem
+              key={node.url ?? i}
+              node={node}
+              pathname={pathname}
+              indented={indented}
+            />
           )
         }
 
+        if (isSeparator(node)) {
+          return <SeparatorItem key={`sep-${i}`} node={node} />
+        }
+
         if (isFolder(node)) {
-          const pages = node.children.filter(isPage)
-          const folders = node.children.filter(isFolder)
+          const hasSectionedChildren = node.children.some(isSeparator)
+
           return (
             <React.Fragment key={i}>
               {node.index ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    render={
-                      <Link
-                        href={node.index.url}
-                        aria-label={String(node.name ?? "Page")}
-                      />
-                    }
-                    isActive={isCurrent(pathname, node.index.url)}
-                    className="hover:bg-foreground/5 data-active:bg-foreground/10"
-                  >
-                    <span className="truncate">{node.name}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : null}
-              {pages.length > 0 ? (
-                <SidebarGroup>
-                  {node.index ? null : (
-                    <SidebarGroupLabel>{node.name}</SidebarGroupLabel>
-                  )}
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {pages.map((child) => (
-                        <SidebarMenuItem key={child.url}>
-                          <SidebarMenuButton
-                            render={
-                              <Link
-                                href={child.url}
-                                aria-label={String(child.name ?? "Page")}
-                              />
-                            }
-                            isActive={isCurrent(pathname, child.url)}
-                            className="pl-6 hover:bg-foreground/5 data-active:bg-foreground/10"
-                          >
-                            <span className="truncate">{child.name}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              ) : null}
-              {folders.length > 0 ? (
-                <NavList nodes={folders} pathname={pathname} />
-              ) : null}
+                <PageItem node={node.index} pathname={pathname} />
+              ) : hasSectionedChildren ? null : (
+                <SidebarGroupLabel>{node.name}</SidebarGroupLabel>
+              )}
+              <NavList
+                nodes={node.children}
+                pathname={pathname}
+                indented={Boolean(node.index) || !hasSectionedChildren}
+              />
             </React.Fragment>
           )
         }
@@ -159,13 +173,15 @@ export function DocsSidebar({
       collapsible="offcanvas"
       className={cn(className)}
     >
-      <SidebarHeader className="px-4 pt-5 pb-1">
+      <SidebarHeader className="flex flex-row items-center gap-2 px-4 pt-5 pb-2">
         <Link
           href="/docs"
-          className="text-sm font-semibold tracking-tight text-foreground"
+          className="flex min-w-0 items-center gap-2 text-sm font-medium"
         >
-          23rd Docs
+          <Logo className="size-6 shrink-0" cornerRadius={4} />
+          <span className="truncate">23rd Docs</span>
         </Link>
+        <DocsSidebarTrigger className="ml-auto shrink-0" />
       </SidebarHeader>
       <SidebarContent>{nav}</SidebarContent>
     </Sidebar>

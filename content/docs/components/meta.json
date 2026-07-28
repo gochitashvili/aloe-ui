@@ -1,9 +1,11 @@
 {
   "title": "Components",
   "pages": [
-    "gooey-color-picker",
+    "---Background---",
     "radiant-lines",
     "shader-gradient",
+    "---Components---",
+    "gooey-color-picker",
     "tangle-footer"
   ]
 }
