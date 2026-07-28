@@ -1,7 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google"
 import { RootProvider } from "fumadocs-ui/provider/next"
+import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
+import { DocsSearchDialog } from "@/components/docs-search-dialog"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "sonner"
@@ -11,10 +13,13 @@ import { flattenPageTree } from "@/lib/tree"
 
 import "./globals.css"
 
-export const metadata = {
-  title: "23rd Docs",
+export const metadata: Metadata = {
+  title: {
+    default: "23rd Docs",
+    template: "%s · 23rd Docs",
+  },
   description:
-    "Documentation for the 23rd project. Built with Fumadocs MDX and Next.js.",
+    "Documentation and component registry for 23rd — animated backgrounds and UI primitives built with Fumadocs MDX and Next.js.",
   metadataBase: new URL("https://23rd.dev"),
 }
 
@@ -49,6 +54,7 @@ export default function RootLayout({
           <RootProvider
             search={{
               links,
+              SearchDialog: DocsSearchDialog,
             }}
           >
             <TooltipProvider>

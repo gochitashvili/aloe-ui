@@ -6,7 +6,7 @@ import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export default function Error({
+export default function ErrorBoundary({
   error,
   reset,
 }: {

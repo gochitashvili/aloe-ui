@@ -129,12 +129,27 @@ export function DocsSidebar({
   tree,
   className,
   id,
+  embedded = false,
 }: {
   tree: RootNode
   className?: string
   id?: string
+  /** When true, render only nav items (parent supplies Sidebar chrome). */
+  embedded?: boolean
 }) {
   const pathname = usePathname()
+
+  const nav = (
+    <SidebarGroup>
+      <SidebarGroupContent>
+        <NavList nodes={tree.children} pathname={pathname} />
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+
+  if (embedded) {
+    return nav
+  }
 
   return (
     <Sidebar
@@ -152,13 +167,7 @@ export function DocsSidebar({
           23rd Docs
         </Link>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <NavList nodes={tree.children} pathname={pathname} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <SidebarContent>{nav}</SidebarContent>
     </Sidebar>
   )
 }
