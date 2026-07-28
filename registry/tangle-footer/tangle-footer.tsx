@@ -46,13 +46,16 @@ const DEFAULT_LINES = [
 
 type Ring = {
   d: string
+  cx: number
+  cy: number
   strokeWidth: number
   fontSize: number
+  /** Text repeated enough to blanket the full circumference. */
   text: string
-  /** Initial rotation phase in degrees (0–360). */
+  /** Seconds for one full revolution. */
+  duration: number
+  /** Fraction of a turn (0–1) to offset the starting rotation. */
   phase: number
-  /** Seconds for one full 360° revolution. */
-  drift: number
   reverse: boolean
 }
 
@@ -84,12 +87,25 @@ function circlePath(cx: number, cy: number, r: number): string {
   ].join(" ")
 }
 
-function buildRingText(line: string, other: string, mix: boolean): string {
+/**
+ * Tile copy so the ring is fully blanketed with no visible gap.
+ * Rotation makes the loop seamless, so we only need to cover the
+ * circumference — no exact tile-width matching required.
+ */
+function buildRingCopy(
+  line: string,
+  other: string,
+  mix: boolean,
+  circumference: number,
+  fontSize: number
+): string {
   const unit = mix
     ? `${line}   ·   ${other}   ·   `
     : `${line}   ·   ${line}   ·   ${other}   ·   `
-  // Repeat so the circumference stays filled under rotation
-  return unit.repeat(8)
+  // Bold + letter-spacing runs wider than 0.5em — over-estimate so we never underfill.
+  const unitWidth = Math.max(unit.length * fontSize * 0.72, 1)
+  const repeats = Math.max(3, Math.ceil(circumference / unitWidth) + 1)
+  return unit.repeat(repeats)
 }
 
 /**
@@ -118,15 +134,19 @@ function buildRings(
   return radii.map((r, i) => {
     const line = pool[Math.floor(rand() * pool.length)]!
     const other = pool[Math.floor(rand() * pool.length)]!
+    const circumference = 2 * Math.PI * r
+    const text = buildRingCopy(line, other, rand() > 0.45, circumference, fontSize)
 
     return {
       d: circlePath(cx, cy, r),
+      cx,
+      cy,
       strokeWidth: STROKE,
       fontSize,
-      text: buildRingText(line, other, rand() > 0.45),
-      phase: rand() * 360,
-      // Outer rings travel farther — slightly slower for even visual pace
-      drift: 28 + rand() * 24,
+      text,
+      // Keep angular pace lively but readable; outer rings a touch slower.
+      duration: 42 + i * 8 + rand() * 10,
+      phase: rand(),
       // Alternate direction each ring (inner → outer)
       reverse: i % 2 === 1,
     }
@@ -135,7 +155,9 @@ function buildRings(
 
 /**
  * Footer of five nested text rings — full-width upper semicircle.
- * Each ring spins a full 360° around the nest center (seamless CSS loop).
+ * The marquee is a continuous rotation of each ring around its center.
+ * A full turn is inherently seamless, so it runs on GPU-friendly CSS
+ * transforms with no per-frame layout work.
  */
 export function TangleFooter({
   className,
@@ -151,6 +173,7 @@ export function TangleFooter({
   const uid = useId().replace(/:/g, "")
   const rootRef = useRef<HTMLElement>(null)
   const [width, setWidth] = useState(0)
+  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
     const el = rootRef.current
@@ -166,9 +189,20 @@ export function TangleFooter({
     return () => ro.disconnect()
   }, [])
 
+  // Pause the animation while off-screen so it never wastes frames.
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el) return
+
+    const io = new IntersectionObserver(
+      ([entry]) => setPaused(!(entry?.isIntersecting ?? true)),
+      { rootMargin: "64px", threshold: 0 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   const bandHeight = height ?? (width > 0 ? width / 2 : 0)
-  const cx = width / 2
-  const cy = bandHeight
   const rings = useMemo(
     () =>
       width > 0 && bandHeight > 0
@@ -176,6 +210,8 @@ export function TangleFooter({
         : [],
     [width, bandHeight, lines, seed]
   )
+
+  const spinName = `tangle-spin-${uid}`
 
   return (
     <footer
@@ -198,6 +234,8 @@ export function TangleFooter({
         aspectRatio: height == null ? "2 / 1" : undefined,
       }}
     >
+      <style>{`@keyframes ${spinName}{to{transform:rotate(360deg)}}`}</style>
+
       {width > 0 && bandHeight > 0 ? (
         <motion.svg
           className="absolute inset-0 size-full"
@@ -208,31 +246,38 @@ export function TangleFooter({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
+          <defs>
+            {rings.map((ring, i) => (
+              <path
+                key={`def-${i}`}
+                id={`${uid}-path-${i}`}
+                d={ring.d}
+                fill="none"
+              />
+            ))}
+          </defs>
+
           {rings.map((ring, i) => {
             const pathId = `${uid}-path-${i}`
-            const from = `${ring.phase} ${cx} ${cy}`
-            const to = `${ring.phase + (ring.reverse ? -360 : 360)} ${cx} ${cy}`
-
             return (
               <g
                 key={`ring-${i}`}
-                // Static pose when motion is reduced; otherwise SMIL owns transform
-                transform={reduce ? `rotate(${ring.phase} ${cx} ${cy})` : undefined}
+                style={
+                  reduce
+                    ? undefined
+                    : {
+                        transformBox: "view-box",
+                        transformOrigin: `${ring.cx}px ${ring.cy}px`,
+                        animation: `${spinName} ${ring.duration}s linear infinite`,
+                        animationDirection: ring.reverse ? "reverse" : "normal",
+                        animationDelay: `${-ring.phase * ring.duration}s`,
+                        animationPlayState: paused ? "paused" : "running",
+                        willChange: "transform",
+                      }
+                }
               >
-                {!reduce ? (
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    from={from}
-                    to={to}
-                    dur={`${ring.drift}s`}
-                    repeatCount="indefinite"
-                    calcMode="linear"
-                  />
-                ) : null}
-                <path
-                  id={pathId}
-                  d={ring.d}
+                <use
+                  href={`#${pathId}`}
                   stroke={ribbon ?? "var(--tangle-ribbon)"}
                   strokeWidth={ring.strokeWidth}
                   strokeLinecap="round"
@@ -246,9 +291,13 @@ export function TangleFooter({
                   fontWeight={700}
                   letterSpacing="0.05em"
                   dominantBaseline="central"
-                  style={{ userSelect: "none" }}
+                  style={{ userSelect: "none", pointerEvents: "none" }}
                 >
-                  <textPath href={`#${pathId}`} startOffset="0%" method="align">
+                  <textPath
+                    href={`#${pathId}`}
+                    startOffset="0"
+                    method="align"
+                  >
                     {ring.text}
                   </textPath>
                 </text>
