@@ -61,10 +61,10 @@ export function DocsShell({
       >
         <SidebarHeader className="px-4 pt-5 pb-1">
           <Link
-            href="/docs"
+            href="/"
             className="text-sm font-semibold tracking-tight text-foreground"
           >
-            23rd Docs
+            23rd
           </Link>
         </SidebarHeader>
         <SidebarContent>
@@ -75,11 +75,11 @@ export function DocsShell({
         <header className="flex h-14 w-full items-center gap-3 px-6 transition-[padding] duration-200 ease-linear md:group-has-[[data-slot=sidebar][data-state=expanded]]/sidebar-wrapper:ps-[calc(var(--sidebar-width)+1.5rem)]">
           <DocsSidebarTrigger />
           <Link
-            href="/docs"
+            href="/"
             className="flex items-center gap-2 text-sm font-medium"
           >
             <Logo className="size-6" cornerRadius={4} />
-            23rd Docs
+            23rd
           </Link>
           <div className="ml-auto">
             <SearchTrigger />

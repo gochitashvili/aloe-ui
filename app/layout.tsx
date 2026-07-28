@@ -15,11 +15,11 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: {
-    default: "23rd Docs",
-    template: "%s · 23rd Docs",
+    default: "23rd",
+    template: "%s · 23rd",
   },
   description:
-    "Documentation and component registry for 23rd — animated backgrounds and UI primitives built with Fumadocs MDX and Next.js.",
+    "Opinionated components for shippers — documentation and registry built with Fumadocs MDX and Next.js.",
   metadataBase: new URL("https://23rd.dev"),
 }
 
