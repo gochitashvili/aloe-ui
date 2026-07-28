@@ -5,6 +5,7 @@
   "include": [
     "registry/gooey-color-picker/registry.json",
     "registry/radiant-lines/registry.json",
-    "registry/shader-gradient/registry.json"
+    "registry/shader-gradient/registry.json",
+    "registry/tangle-footer/registry.json"
   ]
 }

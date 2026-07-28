@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "tangle-footer",
+      "type": "registry:ui",
+      "title": "Tangle Footer",
+      "description": "A footer of tangled SVG ribbons — thick dark strokes with white text running along each path via textPath.",
+      "dependencies": ["motion"],
+      "files": [
+        {
+          "path": "tangle-footer.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tangle-footer.tsx"
+        }
+      ]
+    }
+  ]
+}
