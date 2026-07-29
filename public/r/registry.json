@@ -4,6 +4,19 @@
   "homepage": "https://23rd.dev",
   "items": [
     {
+      "name": "ascii-fluid",
+      "title": "ASCII Fluid",
+      "description": "Mouse-trail WebGL fluid background quantized to a clean ASCII brightness ramp - zero deps, theme-aware.",
+      "files": [
+        {
+          "path": "registry/ascii-fluid/ascii-fluid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/ascii-fluid.tsx"
+        }
+      ],
+      "type": "registry:ui"
+    },
+    {
       "name": "gooey-color-picker",
       "title": "Gooey Color Picker",
       "description": "A floating color picker with a circular hue wheel, alpha slider, hex field, and motion-powered open/close.",

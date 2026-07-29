@@ -69,6 +69,7 @@ pnpm dlx shadcn@latest add radiumcoders/23rd.dev/gooey-color-picker
 
 | Component | Install | Description |
 | --- | --- | --- |
+| [ASCII Fluid](https://23rd.dev/docs/components/ascii-fluid) | `@23rd/ascii-fluid` | Mouse-trail WebGL fluid quantized to a clean ASCII brightness ramp |
 | [Gooey Color Picker](https://23rd.dev/docs/components/gooey-color-picker) | `@23rd/gooey-color-picker` | Floating swatch → hue wheel, alpha, hex — joined by an SVG gooey filter |
 | [Radiant Lines](https://23rd.dev/docs/components/radiant-lines) | `@23rd/radiant-lines` | Hyperspace starfield background; warp speed driven by scroll |
 | [Shader Gradient](https://23rd.dev/docs/components/shader-gradient) | `@23rd/shader-gradient` | Subtle theme-aware WebGL gradient wash; soft blobs + pointer follow |
