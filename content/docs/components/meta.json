@@ -7,6 +7,7 @@
     "ascii-fluid",
     "---Components---",
     "gooey-color-picker",
-    "tangle-footer"
+    "tangle-footer",
+    "stretchy-footer"
   ]
 }

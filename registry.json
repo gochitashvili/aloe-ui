@@ -7,6 +7,7 @@
     "registry/gooey-color-picker/registry.json",
     "registry/radiant-lines/registry.json",
     "registry/shader-gradient/registry.json",
+    "registry/stretchy-footer/registry.json",
     "registry/tangle-footer/registry.json"
   ]
 }
