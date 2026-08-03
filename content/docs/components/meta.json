@@ -5,9 +5,10 @@
     "radiant-lines",
     "shader-gradient",
     "ascii-fluid",
-    "---Components---",
-    "gooey-color-picker",
+    "---Footers---",
     "tangle-footer",
-    "stretchy-footer"
+    "stretchy-footer",
+    "---Specific Components---",
+    "gooey-color-picker"
   ]
 }

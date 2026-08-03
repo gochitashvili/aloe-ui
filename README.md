@@ -52,10 +52,9 @@ Most kits hand you every option. 23rd picks a direction: spacing, motion, and in
 
 ## Quick start
 
-Add the registry, then install a component:
+Install a component:
 
 ```bash
-pnpm dlx shadcn@latest registry add @23rd=https://23rd.dev/r/{name}.json
 pnpm dlx shadcn@latest add @23rd/gooey-color-picker
 ```
 
