@@ -214,8 +214,6 @@ export function ControlColor({
 export type ControlColorsProps = {
   label: string
   colors: string[]
-  /** Optional per-swatch labels (e.g. sky, sage) */
-  swatchLabels?: string[]
   onChange: (colors: string[]) => void
   className?: string
 }
@@ -223,7 +221,6 @@ export type ControlColorsProps = {
 export function ControlColors({
   label,
   colors,
-  swatchLabels,
   onChange,
   className,
 }: ControlColorsProps) {
@@ -233,37 +230,28 @@ export function ControlColors({
       <div className="flex flex-wrap gap-2">
         {colors.map((color, index) => {
           const hex = toHex6(color)
-          const swatchLabel = swatchLabels?.[index] ?? `Color ${index + 1}`
           return (
             <label
-              key={`${swatchLabel}-${index}`}
-              className="group flex cursor-pointer flex-col items-center gap-1.5"
-              title={swatchLabel}
+              key={`${hex}-${index}`}
+              className="relative size-9 cursor-pointer overflow-hidden rounded-2xl ring-1 ring-border/80 transition-[box-shadow] hover:ring-ring/40 focus-within:ring-3 focus-within:ring-ring/30"
             >
-              <span className="relative size-9 overflow-hidden rounded-2xl ring-1 ring-border/80 transition-[box-shadow] group-hover:ring-ring/40 group-focus-within:ring-3 group-focus-within:ring-ring/30">
-                <span
-                  aria-hidden
-                  className="absolute inset-0"
-                  style={{ backgroundColor: hex }}
-                />
-                <input
-                  type="color"
-                  value={hex}
-                  aria-label={swatchLabel}
-                  onChange={(e) => {
-                    const next = colors.map((c, i) =>
-                      i === index ? e.target.value.toUpperCase() : c
-                    )
-                    onChange(next)
-                  }}
-                  className="absolute inset-0 size-full cursor-pointer opacity-0"
-                />
-              </span>
-              {swatchLabels?.[index] ? (
-                <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-                  {swatchLabels[index]}
-                </span>
-              ) : null}
+              <span
+                aria-hidden
+                className="absolute inset-0"
+                style={{ backgroundColor: hex }}
+              />
+              <input
+                type="color"
+                value={hex}
+                aria-label={`${label} ${index + 1}`}
+                onChange={(e) => {
+                  const next = colors.map((c, i) =>
+                    i === index ? e.target.value.toUpperCase() : c
+                  )
+                  onChange(next)
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              />
             </label>
           )
         })}

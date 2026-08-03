@@ -44,7 +44,6 @@ export function ShaderGradientDemo() {
         <ControlColors
           label="Palette"
           colors={props.colors}
-          swatchLabels={["Sky", "Sage", "Cream", "Lavender"]}
           onChange={(colors) => updateProp("colors", colors)}
         />
         <ControlSlider

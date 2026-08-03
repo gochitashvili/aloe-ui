@@ -5,6 +5,7 @@ import Link from "next/link"
 
 import { DocsSidebar } from "@/components/docs-sidebar"
 import { DocsSidebarTrigger } from "@/components/docs-sidebar-trigger"
+import { GithubStars } from "@/components/github-stars"
 import { Logo } from "@/components/logo"
 import { SearchTrigger } from "@/components/search-trigger"
 import {
@@ -44,9 +45,11 @@ type TreeNode = PageNode | SeparatorNode | FolderNode
 export function DocsShell({
   tree,
   children,
+  githubStars = null,
 }: {
   tree: RootNode
   children: ReactNode
+  githubStars?: number | null
 }) {
   return (
     <SidebarProvider
@@ -76,7 +79,8 @@ export function DocsShell({
       <SidebarInset className="min-w-0">
         <header className="flex h-14 w-full items-center gap-3 px-6 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:group-has-[[data-slot=sidebar][data-state=expanded]]/sidebar-wrapper:ps-[calc(var(--sidebar-width)+1.5rem)]">
           <DocsSidebarTrigger showWhenCollapsed />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1">
+            <GithubStars stars={githubStars} />
             <SearchTrigger />
           </div>
         </header>
