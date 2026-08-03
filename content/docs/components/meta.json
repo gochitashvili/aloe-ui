@@ -1,4 +1,13 @@
 {
   "title": "Components",
-  "pages": ["gooey-color-picker"]
+  "pages": [
+    "---Background---",
+    "radiant-lines",
+    "shader-gradient",
+    "ascii-fluid",
+    "---Components---",
+    "gooey-color-picker",
+    "tangle-footer",
+    "stretchy-footer"
+  ]
 }

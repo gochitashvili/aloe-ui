@@ -27,6 +27,12 @@ export type GooeyColorPickerProps = {
   label?: string
 }
 
+/** Minimal typing for the (still non-standard) EyeDropper API. */
+type EyeDropperResult = { sRGBHex: string }
+type EyeDropperConstructor = new () => {
+  open: (options?: { signal?: AbortSignal }) => Promise<EyeDropperResult>
+}
+
 const DEFAULT_COLOR: GooeyColor = { h: 320, s: 90, l: 58, a: 1 }
 
 const spring = {
@@ -252,6 +258,26 @@ function TriggerIcon({ open }: { open: boolean }) {
   )
 }
 
+/** Minimal pipette / eyedropper glyph. */
+function EyeDropperIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="m3 21 1-1h2.5l8-8" />
+      <path d="m13.5 5.5 5 5" />
+      <path d="M15 4.5 17.2 2.3a2 2 0 0 1 2.8 0l1.7 1.7a2 2 0 0 1 0 2.8L19.5 9" />
+    </svg>
+  )
+}
+
 export function GooeyColorPicker({
   value,
   defaultValue,
@@ -271,10 +297,37 @@ export function GooeyColorPicker({
   const hex = toHex(color)
   const [hexDraft, setHexDraft] = useState(hex)
   const hexFocused = useRef(false)
+  const [supportsEyeDropper, setSupportsEyeDropper] = useState(false)
 
   useEffect(() => {
     if (!hexFocused.current) setHexDraft(hex)
   }, [hex])
+
+  useEffect(() => {
+    setSupportsEyeDropper(typeof window !== "undefined" && "EyeDropper" in window)
+  }, [])
+
+  // Commit a color from any picker surface (wheel, alpha, eyedropper) and keep
+  // the code field in sync — even while the input is focused.
+  const applyColor = useCallback(
+    (next: GooeyColor) => {
+      setColor(next)
+      setHexDraft(toHex(next))
+    },
+    [setColor]
+  )
+
+  const pickWithEyeDropper = useCallback(async () => {
+    const Ctor = (window as unknown as { EyeDropper?: EyeDropperConstructor })
+      .EyeDropper
+    if (!Ctor) return
+    try {
+      const { sRGBHex } = await new Ctor().open()
+      applyColor({ ...parseColor(sRGBHex), a: colorRef.current.a })
+    } catch {
+      // user dismissed the eyedropper — no-op
+    }
+  }, [applyColor])
 
   function commitHex(raw: string) {
     const next = parseColor(raw.startsWith("#") ? raw : `#${raw}`)
@@ -329,9 +382,9 @@ export function GooeyColorPicker({
       const angle = (Math.atan2(dy, dx) * 180) / Math.PI
       const h = (angle + 90 + 360) % 360
       const s = clamp(dist * 100, 0, 100)
-      setColor({ ...colorRef.current, h, s, l: 55 })
+      applyColor({ ...colorRef.current, h, s, l: 55 })
     },
-    [setColor]
+    [applyColor]
   )
 
   const updateAlphaFromPointer = useCallback(
@@ -340,9 +393,9 @@ export function GooeyColorPicker({
       if (!el) return
       const rect = el.getBoundingClientRect()
       const t = clamp((clientX - rect.left) / rect.width, 0, 1)
-      setColor({ ...colorRef.current, a: t })
+      applyColor({ ...colorRef.current, a: t })
     },
-    [setColor]
+    [applyColor]
   )
 
   const wheelThumb = {
@@ -377,6 +430,7 @@ export function GooeyColorPicker({
                 scaleX: 1,
                 scaleY: 1,
                 y: 0,
+                filter: "blur(0px)",
                 pointerEvents: "auto" as const,
               }
             : {
@@ -384,10 +438,15 @@ export function GooeyColorPicker({
                 scaleX: 0.22,
                 scaleY: 0.14,
                 y: 12,
+                filter: "blur(12px)",
                 pointerEvents: "none" as const,
               }
         }
-        transition={spring}
+        transition={{
+          ...spring,
+          filter: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+          opacity: { duration: 0.24, ease: [0.22, 1, 0.36, 1] },
+        }}
       >
         <div
           ref={wheelRef}
@@ -418,19 +477,19 @@ export function GooeyColorPicker({
           onKeyDown={(event) => {
             if (event.key === "ArrowLeft") {
               event.preventDefault()
-              setColor({ ...color, h: (color.h + 350) % 360 })
+              applyColor({ ...color, h: (color.h + 350) % 360 })
             }
             if (event.key === "ArrowRight") {
               event.preventDefault()
-              setColor({ ...color, h: (color.h + 10) % 360 })
+              applyColor({ ...color, h: (color.h + 10) % 360 })
             }
             if (event.key === "ArrowUp") {
               event.preventDefault()
-              setColor({ ...color, s: clamp(color.s + 5, 0, 100) })
+              applyColor({ ...color, s: clamp(color.s + 5, 0, 100) })
             }
             if (event.key === "ArrowDown") {
               event.preventDefault()
-              setColor({ ...color, s: clamp(color.s - 5, 0, 100) })
+              applyColor({ ...color, s: clamp(color.s - 5, 0, 100) })
             }
           }}
         >
@@ -463,11 +522,11 @@ export function GooeyColorPicker({
           onKeyDown={(event) => {
             if (event.key === "ArrowRight" || event.key === "ArrowUp") {
               event.preventDefault()
-              setColor({ ...color, a: clamp(color.a + 0.05, 0, 1) })
+              applyColor({ ...color, a: clamp(color.a + 0.05, 0, 1) })
             }
             if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
               event.preventDefault()
-              setColor({ ...color, a: clamp(color.a - 0.05, 0, 1) })
+              applyColor({ ...color, a: clamp(color.a - 0.05, 0, 1) })
             }
           }}
         >
@@ -480,7 +539,7 @@ export function GooeyColorPicker({
           />
         </div>
 
-        <label className="mt-3 flex w-full items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
+        <div className="mt-3 flex w-full items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
           <span
             className="size-3.5 shrink-0 rounded-full ring-1 ring-white/25"
             style={{ background: css }}
@@ -511,7 +570,22 @@ export function GooeyColorPicker({
             }}
             className="min-w-0 flex-1 bg-transparent font-mono text-sm text-white outline-none placeholder:text-white/40"
           />
-        </label>
+          {supportsEyeDropper ? (
+            <button
+              type="button"
+              aria-label="Pick color from screen"
+              tabIndex={open ? 0 : -1}
+              onClick={pickWithEyeDropper}
+              className={cn(
+                "-mr-1 flex size-6 shrink-0 items-center justify-center rounded-md text-white/60 outline-none",
+                "transition-colors hover:bg-white/10 hover:text-white",
+                "focus-visible:ring-2 focus-visible:ring-ring"
+              )}
+            >
+              <EyeDropperIcon />
+            </button>
+          ) : null}
+        </div>
       </motion.div>
 
       <motion.button

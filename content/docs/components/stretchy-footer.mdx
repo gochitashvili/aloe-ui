@@ -1,0 +1,92 @@
+---
+title: Stretchy Footer
+description: Dia-style rubber overscroll — pull past the bottom and a rainbow aurora stretches up, then springs back when you let go.
+---
+
+import {
+  StretchyFooterDemo,
+  StretchyFooterPageEffect,
+} from "@/registry/stretchy-footer/stretchy-footer-demo"
+
+<StretchyFooterPageEffect />
+
+Not a scroll-progress footer reveal — an **overflow rubber-band**. Scroll to the end of this page, then keep going: the page rolls up from the bottom and the rainbow aurora fills the stretch. Let go and it snaps back.
+
+<ComponentPreview title="Stretchy Footer" stageClassName="min-h-0 overflow-hidden p-0" align="start">
+  <StretchyFooterDemo />
+</ComponentPreview>
+
+## Installation
+
+Add the `@23rd` registry, then install the component:
+
+```bash
+pnpm dlx shadcn@latest registry add @23rd=https://23rd.dev/r/{name}.json
+```
+
+<CliCommand command="shadcn@latest add @23rd/stretchy-footer" />
+
+Or install straight from the public GitHub source registry:
+
+<CliCommand
+  npm="npx shadcn@latest add radiumcoders/23rd.dev/stretchy-footer"
+  pnpm="pnpm dlx shadcn@latest add radiumcoders/23rd.dev/stretchy-footer"
+  yarn="yarn dlx shadcn@latest add radiumcoders/23rd.dev/stretchy-footer"
+  bun="bunx --bun shadcn@latest add radiumcoders/23rd.dev/stretchy-footer"
+/>
+
+## Usage
+
+Use it as the scroll viewport. Put your page (and a normal footer block) in `children`. Wheel / touch past the bottom stretches the aurora; idle or release snaps it back. Honors `prefers-reduced-motion` (no stretch).
+
+```tsx
+"use client"
+
+import { StretchyFooter } from "@/components/ui/stretchy-footer"
+
+export function Page() {
+  return (
+    <StretchyFooter className="h-svh bg-[#0A0A0C]">
+      <main className="min-h-[120%] px-8 py-24 text-white">
+        {/* …page content… */}
+      </main>
+      <footer className="px-8 pb-10 text-center text-white/60">
+        23rd — opinionated UI for shippers
+      </footer>
+    </StretchyFooter>
+  )
+}
+```
+
+On a full document (window scroll), pass `windowScroll` and mark the page root with `data-stretchy-page` so the content rolls up into the aurora:
+
+```tsx
+"use client"
+
+import { StretchyFooter } from "@/components/ui/stretchy-footer"
+
+export function DocsChrome() {
+  return (
+    <>
+      <div data-stretchy-page>{/* page content */}</div>
+      <StretchyFooter windowScroll />
+    </>
+  )
+}
+```
+
+## Props
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `children` | `ReactNode` | — |
+| `scrollRef` | `RefObject<HTMLElement \| null>` | self as scroller |
+| `windowScroll` | `boolean` | `false` |
+| `contentSelector` | `string` | `[data-stretchy-page]` |
+| `maxStretch` | `number` | `280` |
+| `colors` | `string[]` | spectrum red → pink |
+| `stiffness` | `number` | `380` |
+| `damping` | `number` | `32` |
+| `columns` | `number` | `48` |
+| `label` | `string` | `Stretchy overflow` |
+| `className` | `string` | — |

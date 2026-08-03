@@ -3,6 +3,11 @@
   "name": "23rd",
   "homepage": "https://23rd.dev",
   "include": [
-    "registry/gooey-color-picker/registry.json"
+    "registry/ascii-fluid/registry.json",
+    "registry/gooey-color-picker/registry.json",
+    "registry/radiant-lines/registry.json",
+    "registry/shader-gradient/registry.json",
+    "registry/stretchy-footer/registry.json",
+    "registry/tangle-footer/registry.json"
   ]
 }

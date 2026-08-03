@@ -11,8 +11,8 @@ export default function NotFound() {
         <p className="text-muted-foreground">
           This page could not be found. It might have been moved or deleted.
         </p>
-        <Link href="/" className={cn(buttonVariants({ variant: "default" }))}>
-          Back home
+        <Link href="/docs" className={cn(buttonVariants({ variant: "default" }))}>
+          Back to docs
         </Link>
       </div>
     </div>

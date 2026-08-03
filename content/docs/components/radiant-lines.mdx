@@ -1,0 +1,62 @@
+---
+title: Radiant Lines
+description: A hyperspace starfield background — colored streaks from the center, warp speed driven by scroll.
+---
+
+import { RadiantLinesDemo } from "@/registry/radiant-lines/radiant-lines-demo"
+
+Canvas starfield in the spirit of those GSAP hyperspace scroll demos: stars project from the center as streaks. Scroll velocity (Motion) boosts warp; release and it eases back to a drift.
+
+<ComponentPreview title="Radiant Lines" stageClassName="min-h-0 overflow-hidden p-0">
+  <RadiantLinesDemo />
+</ComponentPreview>
+
+## Installation
+
+Add the `@23rd` registry, then install the component:
+
+```bash
+pnpm dlx shadcn@latest registry add @23rd=https://23rd.dev/r/{name}.json
+```
+
+<CliCommand command="shadcn@latest add @23rd/radiant-lines" />
+
+Or install straight from the public GitHub source registry:
+
+<CliCommand
+  npm="npx shadcn@latest add radiumcoders/23rd.dev/radiant-lines"
+  pnpm="pnpm dlx shadcn@latest add radiumcoders/23rd.dev/radiant-lines"
+  yarn="yarn dlx shadcn@latest add radiumcoders/23rd.dev/radiant-lines"
+  bun="bunx --bun shadcn@latest add radiumcoders/23rd.dev/radiant-lines"
+/>
+
+## Usage
+
+Place it behind content in a relatively positioned container. Pass `containerRef` when scroll happens inside an overflow element instead of the window.
+
+```tsx
+"use client"
+
+import { useRef } from "react"
+import { RadiantLines } from "@/components/ui/radiant-lines"
+
+export function Hero() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  return (
+    <div ref={ref} className="relative h-svh overflow-y-auto">
+      <RadiantLines containerRef={ref} className="sticky top-0 h-svh" />
+      <div className="relative z-10 p-10">Your content</div>
+    </div>
+  )
+}
+```
+
+## Props
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `colors` | `string[]` | coral / teal / amber / blue / pink / lime / slate |
+| `starCount` | `number` | `420` |
+| `containerRef` | `RefObject<HTMLElement \| null>` | window scroll |
+| `className` | `string` | — |
