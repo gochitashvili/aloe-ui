@@ -8,6 +8,15 @@ const config = {
   experimental: {
     viewTransition: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/docs",
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default withMDX(config)

@@ -15,7 +15,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: {
-    default: "23rd",
+    default: "23rd Docs",
     template: "%s · 23rd",
   },
   description:

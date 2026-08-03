@@ -61,7 +61,7 @@ export function DocsShell({
       >
         <SidebarHeader className="flex flex-row items-center gap-2 px-4 pt-5 pb-2">
           <Link
-            href="/"
+            href="/docs"
             className="flex min-w-0 items-center gap-2 text-sm font-medium"
           >
             <Logo className="size-6 shrink-0" cornerRadius={4} />
