@@ -27,7 +27,8 @@ export type TangleFooterProps = {
   background?: string
   /**
    * Band height in px. Omit to use half the measured width
-   * (upper semicircle of a full-width nest).
+   * (upper semicircle of a full-width nest). When set shorter
+   * than that, the nest scales down to fit so rings stay intact.
    */
   height?: number
   /** Seed for random line / marquee assignment across rings. */
@@ -109,8 +110,9 @@ function buildRingCopy(
 }
 
 /**
- * Five concentric circles spanning the full width.
- * Each ring picks a random phrase + phase so they don’t match.
+ * Five concentric circles nested as an upper semicircle.
+ * Outer radius fits both width and band height so a short band
+ * still shows complete arches instead of an equatorial clip.
  */
 function buildRings(
   width: number,
@@ -122,7 +124,12 @@ function buildRings(
   const cx = width / 2
   const cy = bandHeight
   const strokePad = STROKE / 2 + 2
-  const outer = Math.max(width / 2 - strokePad, STROKE * 4)
+  // Full-width nest needs height ≈ width/2; if the band is shorter,
+  // shrink the nest so the upper semicircle stays fully visible.
+  const outer = Math.max(
+    Math.min(width / 2 - strokePad, bandHeight - strokePad),
+    STROKE * 4
+  )
   const radii = Array.from(
     { length: RING_COUNT },
     (_, i) => (outer * (i + 1)) / RING_COUNT
