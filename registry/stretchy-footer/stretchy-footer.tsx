@@ -55,6 +55,11 @@ export type StretchyFooterProps = {
   columns?: number
   /** Accessible label for the decorative field. */
   label?: string
+  /**
+   * Optional id for docs demos. `playStretchyFooterDemo({ target })` only
+   * animates footers whose `demoId` matches.
+   */
+  demoId?: string
 }
 
 const DEFAULT_COLORS = [
@@ -75,10 +80,86 @@ const WHEEL_IDLE_MS = 90
 const PULL_GAIN = 0.7
 const POP_BOOST = 1.45
 
+/** Docs / demos — dispatch to play the rubber stretch without faking wheel input. */
+export const STRETCHY_FOOTER_PLAY = "stretchy-footer:play"
+
+export type StretchyFooterPlayDetail = {
+  /** Peak pull as a fraction of `maxStretch`. Default `0.82`. */
+  amount?: number
+  /** How long to hold the stretch before snapping back, in ms. Default `700`. */
+  holdMs?: number
+  /** Only footers with this `demoId` respond. */
+  target?: string
+  /** Scroll this element (or the window) to the end before playing. */
+  scrollRoot?: HTMLElement | null
+}
+
+async function scrollToEnd(root?: HTMLElement | null) {
+  if (root) {
+    const max = Math.max(0, root.scrollHeight - root.clientHeight)
+    root.scrollTo({ top: max, behavior: "smooth" })
+    const started = performance.now()
+    while (performance.now() - started < 2000) {
+      if (root.scrollTop >= max - 2) break
+      await new Promise<void>((r) => window.setTimeout(r, 32))
+    }
+    root.scrollTo({ top: max })
+    return
+  }
+
+  const max = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight
+  )
+  window.scrollTo({ top: max, behavior: "smooth" })
+  const started = performance.now()
+  while (performance.now() - started < 2000) {
+    const top = window.scrollY || document.documentElement.scrollTop
+    if (top >= max - 2) break
+    await new Promise<void>((r) => window.setTimeout(r, 32))
+  }
+  window.scrollTo({ top: max })
+}
+
+/** Scroll to the end, then play the stretch on matching footers. */
+export async function playStretchyFooterDemo(
+  detail: StretchyFooterPlayDetail = {}
+) {
+  if (typeof window === "undefined") return
+
+  await scrollToEnd(detail.scrollRoot)
+
+  window.dispatchEvent(
+    new CustomEvent<StretchyFooterPlayDetail>(STRETCHY_FOOTER_PLAY, {
+      detail,
+    })
+  )
+
+  const hold = detail.holdMs ?? 700
+  // Travel out + hold + spring home
+  await new Promise<void>((r) => window.setTimeout(r, hold + 900))
+}
+
 function columnScale(index: number, count: number): number {
   if (count <= 1) return 1
   const t = (index / (count - 1)) * 2 - 1
   return Math.exp(-t * t * 2.2)
+}
+
+/** Stable rgba() for SSR — avoids hex/rgb serialization mismatches. */
+function hexToRgba(hex: string, alpha: number): string {
+  const raw = hex.replace("#", "")
+  const full =
+    raw.length === 3
+      ? raw
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : raw.slice(0, 6)
+  const r = Number.parseInt(full.slice(0, 2), 16)
+  const g = Number.parseInt(full.slice(2, 4), 16)
+  const b = Number.parseInt(full.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
 function applyResistance(current: number, delta: number, max: number): number {
@@ -118,8 +199,9 @@ export function StretchyFooter({
   damping = 32,
   columns = DEFAULT_COLUMNS,
   label = "Stretchy overflow",
+  demoId,
 }: StretchyFooterProps) {
-  const reduce = useReducedMotion() ?? false
+  const reduceMotion = useReducedMotion() ?? false
   const internalRef = useRef<HTMLDivElement>(null)
   const pull = useMotionValue(0)
   const stretch = useSpring(pull, {
@@ -132,8 +214,15 @@ export function StretchyFooter({
   const touchStartY = useRef(0)
   const touchStretch0 = useRef(0)
   const wheelTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const demoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const demoPlayingRef = useRef(false)
   const rolledEl = useRef<HTMLElement | null>(null)
   const [mounted, setMounted] = useState(false)
+  /** User-triggered demo — plays even when prefers-reduced-motion is on. */
+  const [demoPlaying, setDemoPlaying] = useState(false)
+  demoPlayingRef.current = demoPlaying
+  // Gate on `mounted` so prefers-reduced-motion can't mismatch SSR HTML.
+  const reduce = mounted && reduceMotion && !demoPlaying
 
   useEffect(() => {
     setMounted(true)
@@ -148,16 +237,21 @@ export function StretchyFooter({
 
   const bars = useMemo(() => {
     const count = Math.max(8, Math.min(96, Math.floor(columns)))
-    return Array.from({ length: count }, (_, i) => ({
-      key: i,
-      color: colors[i % colors.length]!,
-      scale: columnScale(i, count),
-    }))
+    return Array.from({ length: count }, (_, i) => {
+      const color = colors[i % colors.length]!
+      const heightPct = Math.max(28, columnScale(i, count) * 100).toFixed(2)
+      return {
+        key: i,
+        height: `${heightPct}%`,
+        backgroundImage: `linear-gradient(to top, ${hexToRgba(color, 1)} 0%, ${hexToRgba(color, 0.6)} 45%, rgba(0, 0, 0, 0) 100%)`,
+      }
+    })
   }, [colors, columns])
 
   // Lift the page in lockstep with the stretch — translate only, no 3D.
   useMotionValueEvent(stretch, "change", (v) => {
-    if (reduce || (!windowScroll && !scrollRef)) return
+    if (reduceMotion && !demoPlayingRef.current) return
+    if (!windowScroll && !scrollRef) return
 
     if (!rolledEl.current?.isConnected) {
       rolledEl.current = document.querySelector(
@@ -188,8 +282,53 @@ export function StretchyFooter({
     }
   }, [])
 
+  // Always listen for docs "Show effect" — drives pull directly (no fake wheels).
   useEffect(() => {
-    if (reduce) return
+    const clearDemoTimer = () => {
+      if (demoTimer.current) {
+        clearTimeout(demoTimer.current)
+        demoTimer.current = null
+      }
+    }
+
+    const onPlay = (event: Event) => {
+      const detail =
+        (event as CustomEvent<StretchyFooterPlayDetail>).detail ?? {}
+      if (detail.target != null && detail.target !== demoId) return
+      // Scoped footers ignore broadcast plays without a target.
+      if (detail.target == null && demoId != null) return
+
+      const amount = detail.amount ?? 0.82
+      const holdMs = detail.holdMs ?? 700
+
+      if (wheelTimer.current) {
+        clearTimeout(wheelTimer.current)
+        wheelTimer.current = null
+      }
+      clearDemoTimer()
+      demoPlayingRef.current = true
+      setDemoPlaying(true)
+      pull.set(Math.min(maxStretch, Math.max(0, maxStretch * amount)))
+      demoTimer.current = setTimeout(() => {
+        demoTimer.current = null
+        pull.set(0)
+        // Wait for the spring to settle before re-honoring reduced motion.
+        window.setTimeout(() => {
+          demoPlayingRef.current = false
+          setDemoPlaying(false)
+        }, 500)
+      }, holdMs)
+    }
+
+    window.addEventListener(STRETCHY_FOOTER_PLAY, onPlay)
+    return () => {
+      clearDemoTimer()
+      window.removeEventListener(STRETCHY_FOOTER_PLAY, onPlay)
+    }
+  }, [demoId, maxStretch, pull])
+
+  useEffect(() => {
+    if (reduceMotion) return
 
     let target: OverscrollTarget | null = null
     if (windowScroll) {
@@ -231,6 +370,11 @@ export function StretchyFooter({
     }
 
     const onWheel = (event: WheelEvent) => {
+      if (demoTimer.current) {
+        clearTimeout(demoTimer.current)
+        demoTimer.current = null
+        setDemoPlaying(false)
+      }
       const current = pull.get()
       const scrollingDown = event.deltaY > 0
       const scrollingUp = event.deltaY < 0
@@ -263,6 +407,11 @@ export function StretchyFooter({
     const onTouchStart = (event: TouchEvent) => {
       const t = event.touches[0]
       if (!t) return
+      if (demoTimer.current) {
+        clearTimeout(demoTimer.current)
+        demoTimer.current = null
+        setDemoPlaying(false)
+      }
       touchStartY.current = t.clientY
       touchStretch0.current = pull.get()
     }
@@ -323,14 +472,7 @@ export function StretchyFooter({
         el.removeEventListener("touchcancel", onTouchEnd)
       }
     }
-  }, [
-    reduce,
-    scrollRef,
-    windowScroll,
-    maxStretch,
-    pull,
-    stretch,
-  ])
+  }, [reduceMotion, scrollRef, windowScroll, maxStretch, pull, stretch])
 
   const aurora = (
     <div
@@ -355,8 +497,8 @@ export function StretchyFooter({
               key={bar.key}
               className="min-w-0 flex-1"
               style={{
-                height: `${Math.max(28, bar.scale * 100)}%`,
-                background: `linear-gradient(to top, ${bar.color} 0%, ${bar.color}99 45%, transparent 100%)`,
+                height: bar.height,
+                backgroundImage: bar.backgroundImage,
               }}
             />
           ))}
@@ -366,8 +508,8 @@ export function StretchyFooter({
         <div
           className="absolute inset-x-0 bottom-0 h-1/2"
           style={{
-            background:
-              "radial-gradient(ellipse 70% 100% at 50% 100%, rgba(255,255,255,0.22), transparent 70%)",
+            backgroundImage:
+              "radial-gradient(ellipse 70% 100% at 50% 100%, rgba(255,255,255,0.22), rgba(0, 0, 0, 0) 70%)",
           }}
         />
       </motion.div>
