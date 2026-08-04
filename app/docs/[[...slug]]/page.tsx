@@ -2,6 +2,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import { DocsPager } from "@/components/docs-pager"
 import { DocsToc } from "@/components/docs-toc"
 import { getMDXComponents } from "@/components/mdx"
 import { source } from "@/lib/source"
@@ -38,6 +39,7 @@ export default async function Page(props: {
             })}
           />
         </div>
+        <DocsPager tree={source.getPageTree()} url={page.url} />
       </article>
       <DocsToc items={page.data.toc} />
     </div>
