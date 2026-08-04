@@ -14,8 +14,10 @@ import { usePreviewProps } from "@/hooks/use-preview-props"
 import { AsciiFluid } from "@/registry/ascii-fluid/ascii-fluid"
 
 /** Matches AsciiFluid theme defaults (uppercase for color inputs). */
-const LIGHT = { color: "#18181B", backgroundColor: "#FAFAFA" } as const
-const DARK = { color: "#E4E4E7", backgroundColor: "#09090B" } as const
+const LIGHT = { color: "#18181B", backgroundColor: "#FAFAFA" }
+const DARK = { color: "#E4E4E7", backgroundColor: "#09090B" }
+
+type ThemePalette = { color: string; backgroundColor: string }
 
 function norm(hex: string) {
   return hex.trim().toUpperCase()
@@ -24,7 +26,7 @@ function norm(hex: string) {
 function matchesPalette(
   color: string,
   backgroundColor: string,
-  palette: { color: string; backgroundColor: string }
+  palette: ThemePalette
 ) {
   return (
     norm(color) === norm(palette.color) &&
@@ -42,7 +44,7 @@ function isStockThemePalette(color: string, backgroundColor: string) {
 
 export function AsciiFluidDemo() {
   const { resolvedTheme } = useTheme()
-  const palette = resolvedTheme === "dark" ? DARK : LIGHT
+  const palette: ThemePalette = resolvedTheme === "dark" ? DARK : LIGHT
 
   const defaults = useMemo(
     () => ({
@@ -54,7 +56,7 @@ export function AsciiFluidDemo() {
       color: palette.color,
       backgroundColor: palette.backgroundColor,
     }),
-    [palette]
+    [palette.color, palette.backgroundColor]
   )
 
   const { props, updateProp, resetProps, hasChanges, setProps } =
