@@ -1,5 +1,8 @@
 "use client"
 
+import { useEffect, useMemo } from "react"
+import { useTheme } from "next-themes"
+
 import {
   ComponentControls,
   ControlColor,
@@ -10,19 +13,72 @@ import { ComponentPreview } from "@/components/component-preview"
 import { usePreviewProps } from "@/hooks/use-preview-props"
 import { AsciiFluid } from "@/registry/ascii-fluid/ascii-fluid"
 
-const DEFAULTS = {
-  cellSize: 12,
-  force: 1,
-  dissipation: 0.05,
-  brush: 0.55,
-  animate: true,
-  color: "#18181B",
-  backgroundColor: "#FAFAFA",
+/** Matches AsciiFluid theme defaults (uppercase for color inputs). */
+const LIGHT = { color: "#18181B", backgroundColor: "#FAFAFA" }
+const DARK = { color: "#E4E4E7", backgroundColor: "#09090B" }
+
+type ThemePalette = { color: string; backgroundColor: string }
+
+function norm(hex: string) {
+  return hex.trim().toUpperCase()
+}
+
+function matchesPalette(
+  color: string,
+  backgroundColor: string,
+  palette: ThemePalette
+) {
+  return (
+    norm(color) === norm(palette.color) &&
+    norm(backgroundColor) === norm(palette.backgroundColor)
+  )
+}
+
+/** True when ink/paper are still one of the built-in theme pairs. */
+function isStockThemePalette(color: string, backgroundColor: string) {
+  return (
+    matchesPalette(color, backgroundColor, LIGHT) ||
+    matchesPalette(color, backgroundColor, DARK)
+  )
 }
 
 export function AsciiFluidDemo() {
-  const { props, updateProp, resetProps, hasChanges } =
-    usePreviewProps(DEFAULTS)
+  const { resolvedTheme } = useTheme()
+  const palette: ThemePalette = resolvedTheme === "dark" ? DARK : LIGHT
+
+  const defaults = useMemo(
+    () => ({
+      cellSize: 12,
+      force: 1,
+      dissipation: 0.05,
+      brush: 0.55,
+      animate: true,
+      color: palette.color,
+      backgroundColor: palette.backgroundColor,
+    }),
+    [palette.color, palette.backgroundColor]
+  )
+
+  const { props, updateProp, resetProps, hasChanges, setProps } =
+    usePreviewProps(defaults)
+
+  // Keep stock ink/paper on the active theme until the user picks custom colors.
+  useEffect(() => {
+    setProps((prev) => {
+      if (!isStockThemePalette(prev.color, prev.backgroundColor)) return prev
+      if (matchesPalette(prev.color, prev.backgroundColor, palette)) return prev
+      return {
+        ...prev,
+        color: palette.color,
+        backgroundColor: palette.backgroundColor,
+      }
+    })
+  }, [palette, setProps])
+
+  const useAutoTheme = isStockThemePalette(
+    props.color,
+    props.backgroundColor
+  )
 
   return (
     <>
@@ -38,8 +94,9 @@ export function AsciiFluidDemo() {
             dissipation={props.dissipation}
             brush={props.brush}
             animate={props.animate}
-            color={props.color}
-            backgroundColor={props.backgroundColor}
+            color={useAutoTheme ? undefined : props.color}
+            backgroundColor={useAutoTheme ? undefined : props.backgroundColor}
+            theme="auto"
           />
         </div>
       </ComponentPreview>
