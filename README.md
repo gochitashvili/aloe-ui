@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-<p align="center">
+<p align="center"> 
   <a href="https://23rd.dev">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/docs-23rd.dev-18181b.svg?variant=branded&logo=bookstack&mode=dark" />
