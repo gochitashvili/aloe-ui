@@ -1,4 +1,4 @@
-const REPO = "radiumcoders/23rd.dev"
+const REPO = "gochitashvili/aloe-ui"
 
 export function getGithubRepoUrl() {
   return `https://github.com/${REPO}`
@@ -17,7 +17,7 @@ export async function getGithubStars(): Promise<number | null> {
     const res = await fetch(`https://api.github.com/repos/${REPO}`, {
       headers: {
         Accept: "application/vnd.github+json",
-        "User-Agent": "23rd.dev",
+        "User-Agent": "aloe-ui",
       },
       next: { revalidate: 600 },
     })

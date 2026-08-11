@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
-const STORAGE_KEY = "23rd:package-manager"
+const STORAGE_KEY = "aloe-ui:package-manager"
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun"
 

@@ -57,8 +57,8 @@ export function readRootRegistry(rootRegistryPath = ROOT_REGISTRY_PATH) {
 export function composeRootRegistry(current, includes) {
   return {
     $schema: current.$schema ?? REGISTRY_SCHEMA,
-    name: current.name ?? "23rd",
-    homepage: current.homepage ?? "https://23rd.dev",
+    name: current.name ?? "aloe-ui",
+    homepage: current.homepage ?? "https://www.aloeui.com",
     include: includes,
   }
 }

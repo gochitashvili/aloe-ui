@@ -7,26 +7,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: "https://23rd.dev/docs",
+      url: "https://www.aloeui.com/docs",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
-    {
-      url: "https://23rd.dev/demo",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    ...params.map((param) => {
-      const slug = param.slug?.join("/") ?? ""
-      if (!slug) return null
-      return {
-        url: `https://23rd.dev/docs/${slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.6,
-      }
-    }).filter((entry): entry is NonNullable<typeof entry> => entry != null),
+    ...params
+      .map((param) => {
+        const slug = param.slug?.join("/") ?? ""
+        if (!slug) return null
+        return {
+          url: `https://www.aloeui.com/docs/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.6,
+        }
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry != null),
   ]
 }

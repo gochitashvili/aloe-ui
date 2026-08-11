@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { DocsSidebarTrigger } from "@/components/docs-sidebar-trigger"
-import { Logo } from "@/components/logo"
 import {
   Sidebar,
   SidebarContent,
@@ -176,10 +175,9 @@ export function DocsSidebar({
       <SidebarHeader className="flex flex-row items-center gap-2 px-4 pt-5 pb-2">
         <Link
           href="/docs"
-          className="flex min-w-0 items-center gap-2 text-sm font-medium"
+          className="min-w-0 text-sm font-medium"
         >
-          <Logo className="size-6 shrink-0" cornerRadius={4} />
-          <span className="truncate">23rd Docs</span>
+          <span className="truncate">Aloe UI Docs</span>
         </Link>
         <DocsSidebarTrigger className="ml-auto shrink-0" />
       </SidebarHeader>

@@ -15,14 +15,9 @@ export default async function Page(props: {
   if (!page) notFound()
 
   const MDX = page.data.body
-  const isStretchyFooter =
-    params.slug?.join("/") === "components/stretchy-footer"
 
   return (
-    <div
-      className="relative w-full px-6 py-10 md:py-14"
-      {...(isStretchyFooter ? { "data-stretchy-page": "" } : {})}
-    >
+    <div className="relative w-full px-6 py-10 md:py-14">
       <article className="mx-auto w-full max-w-2xl">
         <h1 className="text-3xl font-semibold tracking-tight">
           {page.data.title}

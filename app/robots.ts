@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://23rd.dev/sitemap.xml",
+    sitemap: "https://www.aloeui.com/sitemap.xml",
   }
 }

@@ -15,12 +15,12 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: {
-    default: "23rd Docs",
-    template: "%s · 23rd",
+    default: "Aloe UI Docs",
+    template: "%s · Aloe UI",
   },
   description:
     "Opinionated components for shippers — documentation and registry built with Fumadocs MDX and Next.js.",
-  metadataBase: new URL("https://23rd.dev"),
+  metadataBase: new URL("https://www.aloeui.com"),
 }
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
