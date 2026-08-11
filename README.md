@@ -71,7 +71,7 @@ pnpm dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input
 | [Prompt Input](https://www.aloeui.com/docs/components/prompt-input) | `@aloe-ui/prompt-input` | Minimal text input for AI chat and prompt UIs |
 
 ```tsx
-import { PromptInput } from "@/components/ui/prompt-input"
+import { PromptInput } from "@/components/ui/aloe/prompt-input"
 
 export function Example() {
   return (

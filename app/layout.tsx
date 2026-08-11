@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono, IBM_Plex_Sans, Source_Sans_3 } from "next/font/google"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
@@ -13,6 +13,8 @@ import { flattenPageTree } from "@/lib/tree"
 
 import "./globals.css"
 
+const sourceSans3Heading = Source_Sans_3({subsets:['latin'],variable:'--font-heading'});
+
 export const metadata: Metadata = {
   title: {
     default: "Aloe UI Docs",
@@ -23,7 +25,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.aloeui.com"),
 }
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
+const ibmPlexSans = IBM_Plex_Sans({subsets:['latin'],variable:'--font-sans'})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -44,10 +46,9 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        "font-sans antialiased",
-        fontMono.variable,
-        geist.variable
-      )}
+              "font-sans antialiased",
+              fontMono.variable
+            , "font-sans", ibmPlexSans.variable, sourceSans3Heading.variable)}
     >
       <body className="flex min-h-screen flex-col">
         <ThemeProvider>

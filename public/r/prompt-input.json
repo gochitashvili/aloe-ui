@@ -6,9 +6,9 @@
   "files": [
     {
       "path": "registry/prompt-input/prompt-input.tsx",
-      "content": "\"use client\"\n\nimport type { ComponentProps } from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport type PromptInputProps = ComponentProps<\"input\">\n\n/**\n * Minimal prompt field for AI chat UIs.\n * Placeholder implementation — replace with the final design later.\n */\nexport function PromptInput({\n  className,\n  type = \"text\",\n  placeholder = \"Ask anything…\",\n  ...props\n}: PromptInputProps) {\n  return (\n    <input\n      type={type}\n      data-slot=\"prompt-input\"\n      placeholder={placeholder}\n      className={cn(\n        \"h-11 w-full min-w-0 rounded-2xl border border-border bg-background px-4 text-sm outline-none transition-[color,box-shadow,border-color]\",\n        \"placeholder:text-muted-foreground\",\n        \"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30\",\n        \"disabled:cursor-not-allowed disabled:opacity-50\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n",
+      "content": "\"use client\"\n\nimport type { ComponentProps } from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport type PromptInputProps = ComponentProps<\"input\">\n\n/** Minimal prompt field — rebuild from this baseline. */\nexport function PromptInput({\n  className,\n  placeholder = \"Ask anything…\",\n  ...props\n}: PromptInputProps) {\n  return (\n    <input\n      data-slot=\"prompt-input\"\n      placeholder={placeholder}\n      className={cn(\n        \"h-11 w-full min-w-0 rounded-md border border-border bg-background px-3 text-sm outline-none transition-[color,box-shadow,border-color]\",\n        \"placeholder:text-muted-foreground\",\n        \"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50\",\n        \"disabled:cursor-not-allowed disabled:opacity-50\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nexport default PromptInput\n",
       "type": "registry:ui",
-      "target": "components/ui/prompt-input.tsx"
+      "target": "components/ui/aloe/prompt-input.tsx"
     }
   ],
   "type": "registry:ui"

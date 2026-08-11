@@ -10,7 +10,7 @@
         {
           "path": "prompt-input.tsx",
           "type": "registry:ui",
-          "target": "components/ui/prompt-input.tsx"
+          "target": "components/ui/aloe/prompt-input.tsx"
         }
       ]
     }
