@@ -1,4 +1,3 @@
-import { Databuddy } from "@databuddy/sdk/react"
 import { Geist, Geist_Mono } from "next/font/google"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import type { Metadata } from "next"
@@ -64,11 +63,6 @@ export default function RootLayout({
             </TooltipProvider>
           </RootProvider>
         </ThemeProvider>
-        <Databuddy
-          clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}
-          trackWebVitals
-          trackErrors
-        />
       </body>
     </html>
   )
