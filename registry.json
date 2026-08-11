@@ -3,6 +3,6 @@
   "name": "aloe-ui",
   "homepage": "https://www.aloeui.com",
   "include": [
-    "registry/gooey-color-picker/registry.json"
+    "registry/prompt-input/registry.json"
   ]
 }

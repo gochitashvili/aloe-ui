@@ -1,0 +1,52 @@
+---
+title: Prompt Input
+description: A minimal text input for AI chat and prompt UIs.
+---
+
+import { PromptInput } from "@/registry/prompt-input/prompt-input"
+
+A simple prompt field you can drop into chat composers and AI blocks. This is a placeholder surface — the full design will land later.
+
+<ComponentPreview title="Prompt Input" stageClassName="min-h-[40svh] items-center px-6">
+  <div className="w-full max-w-md">
+    <PromptInput aria-label="Prompt" />
+  </div>
+</ComponentPreview>
+
+## Installation
+
+<CliCommand command="shadcn@latest add @aloe-ui/prompt-input" />
+
+Or install straight from the public GitHub source registry:
+
+<CliCommand
+  npm="npx shadcn@latest add gochitashvili/aloe-ui/prompt-input"
+  pnpm="pnpm dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input"
+  yarn="yarn dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input"
+  bun="bunx --bun shadcn@latest add gochitashvili/aloe-ui/prompt-input"
+/>
+
+## Usage
+
+```tsx
+import { PromptInput } from "@/components/ui/prompt-input"
+
+export function Example() {
+  return (
+    <PromptInput
+      placeholder="Ask anything…"
+      onChange={(event) => console.log(event.target.value)}
+    />
+  )
+}
+```
+
+## Props
+
+Accepts standard `<input>` props.
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `placeholder` | `string` | `"Ask anything…"` |
+| `className` | `string` | — |
+| `…` | `ComponentProps<"input">` | — |

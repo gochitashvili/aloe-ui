@@ -44,40 +44,40 @@ Site: [aloeui.com](https://www.aloeui.com) · Docs: [aloeui.com/docs](https://ww
 
 ## Why Aloe UI
 
-Most kits hand you every option. Aloe UI picks a direction: spacing, motion, and interaction patterns that already feel finished. You can still override anything — you just start from a sharper baseline.
+Most kits hand you every option. Aloe UI picks a direction: spacing, interaction patterns, and composition rules that already feel finished. You can still override anything — you just start from a sharper baseline.
 
 - **shadcn-native** — install with the CLI, own the source in your repo
 - **Opinionated defaults** — less boilerplate, clearer decisions
-- **Built to ship** — React, Tailwind, Motion where it earns its keep
+- **Built to ship** — React and Tailwind where it earns its keep
 
 ## Quick start
 
 Install a component:
 
 ```bash
-pnpm dlx shadcn@latest add @aloe-ui/gooey-color-picker
+pnpm dlx shadcn@latest add @aloe-ui/prompt-input
 ```
 
 Or pull straight from GitHub:
 
 ```bash
-pnpm dlx shadcn@latest add gochitashvili/aloe-ui/gooey-color-picker
+pnpm dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input
 ```
 
 ## Components
 
 | Component | Install | Description |
 | --- | --- | --- |
-| [Gooey Color Picker](https://www.aloeui.com/docs/components/gooey-color-picker) | `@aloe-ui/gooey-color-picker` | Floating swatch → hue wheel, alpha, hex — joined by an SVG gooey filter |
+| [Prompt Input](https://www.aloeui.com/docs/components/prompt-input) | `@aloe-ui/prompt-input` | Minimal text input for AI chat and prompt UIs |
 
 ```tsx
-import { GooeyColorPicker } from "@/components/ui/gooey-color-picker"
+import { PromptInput } from "@/components/ui/prompt-input"
 
 export function Example() {
   return (
-    <GooeyColorPicker
-      defaultValue={{ h: 210, s: 90, l: 55, a: 1 }}
-      onChange={(color, css) => console.log(color, css)}
+    <PromptInput
+      placeholder="Ask anything…"
+      onChange={(event) => console.log(event.target.value)}
     />
   )
 }

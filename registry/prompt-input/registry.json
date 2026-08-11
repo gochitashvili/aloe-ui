@@ -1,20 +1,18 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "aloe-ui",
-  "homepage": "https://www.aloeui.com",
   "items": [
     {
       "name": "prompt-input",
+      "type": "registry:ui",
       "title": "Prompt Input",
       "description": "A minimal text input for AI chat and prompt UIs.",
       "files": [
         {
-          "path": "registry/prompt-input/prompt-input.tsx",
+          "path": "prompt-input.tsx",
           "type": "registry:ui",
           "target": "components/ui/prompt-input.tsx"
         }
-      ],
-      "type": "registry:ui"
+      ]
     }
   ]
 }

@@ -2,7 +2,6 @@ import defaultMdxComponents from "fumadocs-ui/mdx"
 import type { MDXComponents } from "mdx/types"
 
 import { CliCommand } from "@/components/cli-command"
-import { ComponentControls } from "@/components/component-controls"
 import { ComponentPreview } from "@/components/component-preview"
 import { MdxPre } from "@/components/mdx-pre"
 import {
@@ -18,7 +17,6 @@ export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
     CliCommand,
-    ComponentControls,
     ComponentPreview,
     pre: MdxPre,
     table: MdxTable,
