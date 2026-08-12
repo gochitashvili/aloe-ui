@@ -6,7 +6,6 @@ import type { ReactNode } from "react"
 import { DocsSearchDialog } from "@/components/docs-search-dialog"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster } from "sonner"
 import { cn } from "@/lib/utils"
 import { source } from "@/lib/source"
 import { flattenPageTree } from "@/lib/tree"
@@ -60,7 +59,6 @@ export default function RootLayout({
           >
             <TooltipProvider>
               {children}
-              <Toaster richColors position="bottom-right" />
             </TooltipProvider>
           </RootProvider>
         </ThemeProvider>

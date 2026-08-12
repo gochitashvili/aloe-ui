@@ -172,7 +172,7 @@ export function DocsSidebar({
       collapsible="offcanvas"
       className={cn(className)}
     >
-      <SidebarHeader className="flex flex-row items-center gap-2 px-4 pt-5 pb-2">
+      <SidebarHeader className="flex h-14 flex-row items-center gap-2 px-4">
         <Link
           href="/docs"
           className="min-w-0 text-sm font-medium"

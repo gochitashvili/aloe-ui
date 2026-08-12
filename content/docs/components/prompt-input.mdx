@@ -1,52 +1,124 @@
 ---
 title: Prompt Input
-description: A minimal text input for AI chat and prompt UIs.
+description: An AI prompt composer built with InputGroup, Button, and DropdownMenu.
 ---
 
 import { PromptInput } from "@/registry/prompt-input/prompt-input"
+import {
+  promptInputDefault,
+  promptInputDemo,
+  promptInputGhost,
+  promptInputOutline,
+  promptInputSizeDefault,
+  promptInputSizeLg,
+  promptInputSizeSm,
+} from "./prompt-input.examples"
 
-A simple prompt field for AI UIs. Installs to `components/ui/aloe/`.
+A prompt field with attachment actions and a send control. Built from shadcn primitives. Installs to `components/ui/aloe/`.
 
-<ComponentPreview title="Prompt Input" stageClassName="min-h-[40svh] items-center px-6">
-  <div className="w-full max-w-md">
+<ComponentPreview title="Prompt Input" code={promptInputDemo}>
+  <div className="w-full max-w-xl">
     <PromptInput aria-label="Prompt" />
   </div>
 </ComponentPreview>
 
 ## Installation
 
-<CliCommand command="shadcn@latest add @aloe-ui/prompt-input" />
-
-Or install straight from the public GitHub source registry:
-
-<CliCommand
-  npm="npx shadcn@latest add gochitashvili/aloe-ui/prompt-input"
-  pnpm="pnpm dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input"
-  yarn="yarn dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input"
-  bun="bunx --bun shadcn@latest add gochitashvili/aloe-ui/prompt-input"
+<ComponentInstall
+  name="prompt-input"
+  source="prompt-input/prompt-input.tsx"
+  target="components/ui/aloe/prompt-input.tsx"
+  registryDependencies={[
+    "button",
+    "dropdown-menu",
+    "input-group",
+    "textarea",
+  ]}
+  dependencies={["lucide-react"]}
+  github="gochitashvili/aloe-ui/prompt-input"
 />
 
 ## Usage
 
 ```tsx
 import { PromptInput } from "@/components/ui/aloe/prompt-input"
-
-export function Example() {
-  return (
-    <PromptInput
-      placeholder="Ask anything…"
-      onChange={(event) => console.log(event.target.value)}
-    />
-  )
-}
 ```
 
-## Props
+```tsx
+<PromptInput placeholder="Ask anything…" />
+```
 
-Accepts standard `<input>` props.
+## Composition
+
+```txt
+PromptInput
+├── InputGroup
+│   ├── InputGroupTextarea
+│   ├── InputGroupAddon (start) → DropdownMenu + Button
+│   └── InputGroupAddon (end) → Button
+```
+
+## Size
+
+Use the `size` prop to change the size of the prompt input.
+
+### Small
+
+<ComponentPreview title="Size sm" code={promptInputSizeSm}>
+  <div className="w-full max-w-xl">
+    <PromptInput size="sm" aria-label="Prompt sm" />
+  </div>
+</ComponentPreview>
+
+### Default
+
+<ComponentPreview title="Size default" code={promptInputSizeDefault}>
+  <div className="w-full max-w-xl">
+    <PromptInput size="default" aria-label="Prompt default size" />
+  </div>
+</ComponentPreview>
+
+### Large
+
+<ComponentPreview title="Size lg" code={promptInputSizeLg}>
+  <div className="w-full max-w-xl">
+    <PromptInput size="lg" aria-label="Prompt lg" />
+  </div>
+</ComponentPreview>
+
+## Default
+
+<ComponentPreview title="Default" code={promptInputDefault}>
+  <div className="w-full max-w-xl">
+    <PromptInput variant="default" aria-label="Prompt default" />
+  </div>
+</ComponentPreview>
+
+## Outline
+
+<ComponentPreview title="Outline" code={promptInputOutline}>
+  <div className="w-full max-w-xl">
+    <PromptInput variant="outline" aria-label="Prompt outline" />
+  </div>
+</ComponentPreview>
+
+## Ghost
+
+<ComponentPreview title="Ghost" code={promptInputGhost}>
+  <div className="w-full max-w-xl">
+    <PromptInput variant="ghost" aria-label="Prompt ghost" />
+  </div>
+</ComponentPreview>
+
+## API Reference
+
+### PromptInput
 
 | Prop | Type | Default |
 | --- | --- | --- |
+| `variant` | `"default" \| "outline" \| "ghost"` | `"default"` |
+| `size` | `"default" \| "sm" \| "lg"` | `"default"` |
 | `placeholder` | `string` | `"Ask anything…"` |
+| `disabled` | `boolean` | `false` |
+| `textareaProps` | `ComponentProps<typeof InputGroupTextarea>` | — |
 | `className` | `string` | — |
-| `…` | `ComponentProps<"input">` | — |

@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { RiCheckLine, RiFileCopyLine } from "@remixicon/react"
-import { toast } from "sonner"
+import { CheckIcon, CopyIcon } from "lucide-react"
 
 import {
   BunIcon,
@@ -136,10 +135,9 @@ export function CliCommand({
     try {
       await navigator.clipboard.writeText(activeCommand)
       setCopied(true)
-      toast.success("Copied to clipboard")
       window.setTimeout(() => setCopied(false), 1600)
     } catch {
-      toast.error("Couldn’t copy command")
+      // ignore
     }
   }
 
@@ -168,7 +166,7 @@ export function CliCommand({
           <SelectTrigger
             size="sm"
             aria-label="Package manager"
-            className="h-auto min-h-0 w-auto justify-start gap-0.5 border-transparent bg-transparent px-0 py-0 text-sm font-medium text-foreground/90 shadow-none hover:bg-transparent focus-visible:border-transparent focus-visible:ring-0"
+            className="h-auto min-h-0 w-auto justify-start gap-1 border-transparent bg-transparent px-1 py-0.5 text-sm font-medium text-foreground/90 shadow-none hover:bg-transparent focus-visible:border-transparent focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent"
           >
             <SelectValue className="flex-none" />
           </SelectTrigger>
@@ -197,7 +195,7 @@ export function CliCommand({
             onClick={onCopy}
             className="shrink-0 text-muted-foreground hover:text-foreground"
           >
-            {copied ? <RiCheckLine /> : <RiFileCopyLine />}
+            {copied ? <CheckIcon /> : <CopyIcon />}
           </Button>
         </div>
       </div>

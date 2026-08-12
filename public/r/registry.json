@@ -6,7 +6,16 @@
     {
       "name": "prompt-input",
       "title": "Prompt Input",
-      "description": "A minimal text input for AI chat and prompt UIs.",
+      "description": "AI prompt composer built with InputGroup, Button, and DropdownMenu.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "dropdown-menu",
+        "input-group",
+        "textarea"
+      ],
       "files": [
         {
           "path": "registry/prompt-input/prompt-input.tsx",

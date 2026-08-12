@@ -27,12 +27,27 @@ Pages are served at `/docs/*` from `app/docs/[[...slug]]/page.tsx`. The page tre
 Live examples use `ComponentPreview` — full content width, roughly a quarter of the viewport tall:
 
 ```tsx
-<ComponentPreview title="Button">
+<ComponentPreview title="Button" code={`<Button>Click me</Button>`}>
   <Button>Click me</Button>
 </ComponentPreview>
 ```
 
-<ComponentPreview title="Button">
+<ComponentPreview
+  title="Button"
+  code={[
+    'import { Button } from "@/components/ui/button"',
+    "",
+    "export function ButtonDemo() {",
+    "  return (",
+    "    <>",
+    "      <Button>Default</Button>",
+    '      <Button variant="outline">Outline</Button>',
+    '      <Button variant="secondary">Secondary</Button>',
+    "    </>",
+    "  )",
+    "}",
+  ].join("\n")}
+>
   <Button>Default</Button>
   <Button variant="outline">Outline</Button>
   <Button variant="secondary">Secondary</Button>

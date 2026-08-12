@@ -1,6 +1,6 @@
 import { findNeighbour } from "fumadocs-core/page-tree"
 import type { Item, Root } from "fumadocs-core/page-tree"
-import { RiArrowLeftLine, RiArrowRightLine } from "@remixicon/react"
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 import Link from "next/link"
 
 import { cn } from "@/lib/utils"
@@ -34,13 +34,13 @@ function PagerLink({
       <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
         {isPrevious ? (
           <>
-            <RiArrowLeftLine className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+            <ArrowLeftIcon className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
             Back
           </>
         ) : (
           <>
             Next
-            <RiArrowRightLine className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </>
         )}
       </span>

@@ -60,12 +60,10 @@ export function DocsShell({
         aria-label="Documentation"
         variant="floating"
         collapsible="offcanvas"
+        className="z-50!"
       >
-        <SidebarHeader className="flex flex-row items-center gap-2 px-4 pt-5 pb-2">
-          <Link
-            href="/docs"
-            className="min-w-0 text-sm font-medium"
-          >
+        <SidebarHeader className="flex h-14 shrink-0 flex-row items-center gap-2 px-4">
+          <Link href="/docs" className="min-w-0 text-sm font-medium">
             <span className="truncate">Aloe UI</span>
           </Link>
           <DocsSidebarTrigger className="ml-auto shrink-0" />
@@ -75,11 +73,13 @@ export function DocsShell({
         </SidebarContent>
       </Sidebar>
       <SidebarInset className="min-w-0">
-        <header className="flex h-14 w-full items-center gap-3 px-6 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:group-has-[[data-slot=sidebar][data-state=expanded]]/sidebar-wrapper:ps-[calc(var(--sidebar-width)+1.5rem)]">
-          <DocsSidebarTrigger showWhenCollapsed />
-          <div className="ml-auto flex items-center gap-1">
-            <GithubStars stars={githubStars} />
-            <SearchTrigger />
+        <header className="sticky top-0 z-30 bg-background/80 px-6 pt-2 backdrop-blur-md supports-backdrop-filter:bg-background/70">
+          <div className="flex h-14 items-center gap-3">
+            <DocsSidebarTrigger hideWhenExpanded className="shrink-0" />
+            <div className="ml-auto flex items-center gap-1">
+              <GithubStars stars={githubStars} />
+              <SearchTrigger />
+            </div>
           </div>
         </header>
         <div className="flex flex-1 flex-col">{children}</div>

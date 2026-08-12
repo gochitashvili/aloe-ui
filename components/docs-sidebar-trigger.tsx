@@ -1,53 +1,39 @@
 "use client"
 
-import * as React from "react"
-import { RiSideBarLine } from "@remixicon/react"
+import { PanelLeftIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useSidebar } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
-const CLOSE_MS = 300
-
 export function DocsSidebarTrigger({
   className,
-  /** Hide while open; reveal only after the sidebar finish closing. */
-  showWhenCollapsed = false,
+  /** Keep layout space, but hide while the sidebar is open. */
+  hideWhenExpanded = false,
 }: {
   className?: string
-  showWhenCollapsed?: boolean
+  hideWhenExpanded?: boolean
 }) {
   const { open, openMobile, isMobile, toggleSidebar } = useSidebar()
   const expanded = isMobile ? openMobile : open
-  const [revealed, setRevealed] = React.useState(!expanded)
-
-  React.useEffect(() => {
-    if (!showWhenCollapsed) return
-
-    if (expanded) {
-      setRevealed(false)
-      return
-    }
-
-    const id = window.setTimeout(() => setRevealed(true), CLOSE_MS)
-    return () => window.clearTimeout(id)
-  }, [expanded, showWhenCollapsed])
-
-  const hidden = showWhenCollapsed && !revealed
+  const concealed = hideWhenExpanded && expanded
 
   return (
     <Button
       variant="ghost"
       size="icon-sm"
-      className={cn(hidden && "hidden", className)}
+      className={cn(
+        concealed && "invisible pointer-events-none",
+        className
+      )}
       aria-label="Toggle navigation menu"
       aria-expanded={expanded}
       aria-controls="docs-sidebar"
-      aria-hidden={hidden || undefined}
-      tabIndex={hidden ? -1 : undefined}
+      aria-hidden={concealed || undefined}
+      tabIndex={concealed ? -1 : undefined}
       onClick={toggleSidebar}
     >
-      <RiSideBarLine />
+      <PanelLeftIcon />
     </Button>
   )
 }
