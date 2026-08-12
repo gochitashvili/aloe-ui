@@ -1,4 +1,5 @@
-const IMPORTS = `import { PlusIcon, SendHorizontalIcon } from "lucide-react"
+import type { ComponentProps } from "react"
+import { PlusIcon, SendHorizontalIcon } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -13,17 +14,14 @@ import {
   InputGroupButton,
   InputGroupTextarea,
 } from "@/components/ui/input-group"
-import { PromptInput } from "@/components/prompt-input"`
+import { PromptInput } from "@/registry/prompt-input/prompt-input"
 
-function compose(name: string, rootProps = "") {
-  const root = rootProps ? ` ${rootProps}` : ""
-
-  return `${IMPORTS}
-
-export function ${name}() {
+export function PromptInputDemo(
+  props: ComponentProps<typeof PromptInput>
+) {
   return (
     <div className="w-full max-w-xl">
-      <PromptInput${root}>
+      <PromptInput {...props}>
         <InputGroup>
           <InputGroupTextarea placeholder="Ask anything…" aria-label="Prompt" />
           <InputGroupAddon align="block-end">
@@ -52,27 +50,4 @@ export function ${name}() {
       </PromptInput>
     </div>
   )
-}`
 }
-
-export const promptInputDemo = compose("PromptInputDemo")
-
-export const promptInputSizeSm = compose(
-  "PromptInputSizeSm",
-  'size="sm"'
-)
-
-export const promptInputSizeLg = compose(
-  "PromptInputSizeLg",
-  'size="lg"'
-)
-
-export const promptInputOutline = compose(
-  "PromptInputOutline",
-  'variant="outline"'
-)
-
-export const promptInputGhost = compose(
-  "PromptInputGhost",
-  'variant="ghost"'
-)

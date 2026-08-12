@@ -8,9 +8,9 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs"
 import { CliCommand } from "@/components/cli-command"
 
 export type ComponentInstallProps = {
-  /** Registry item name, e.g. `prompt-input` */
+  /** Registry item name, e.g. `example-block` */
   name: string
-  /** Path under `registry/`, e.g. `prompt-input/prompt-input.tsx` */
+  /** Path under `registry/`, e.g. `example-block/example-block.tsx` */
   source: string
   /** Install target path shown in the manual steps */
   target: string
@@ -18,7 +18,7 @@ export type ComponentInstallProps = {
   registryDependencies?: string[]
   /** npm package dependencies */
   dependencies?: string[]
-  /** Optional GitHub registry path, e.g. `gochitashvili/aloe-ui/prompt-input` */
+  /** Optional GitHub registry path, e.g. `gochitashvili/aloe-ui/example-block` */
   github?: string
 }
 

@@ -1,25 +1,21 @@
 ---
 title: Prompt Input
-description: An AI prompt composer built with InputGroup, Button, and DropdownMenu.
+description: Reusable AI prompt shell. Compose with Input Group outside.
 ---
 
-import { PromptInput } from "@/registry/prompt-input/prompt-input"
+import { PromptInputDemo } from "./prompt-input.preview"
 import {
-  promptInputDefault,
   promptInputDemo,
   promptInputGhost,
   promptInputOutline,
-  promptInputSizeDefault,
   promptInputSizeLg,
   promptInputSizeSm,
 } from "./prompt-input.examples"
 
-A prompt field with attachment actions and a send control. Built from shadcn primitives. Installs to `components/ui/aloe/`.
+A reusable prompt shell on a plain `div`. Put shadcn `InputGroup` inside and control `size` / `variant` from the root.
 
 <ComponentPreview title="Prompt Input" code={promptInputDemo}>
-  <div className="w-full max-w-xl">
-    <PromptInput aria-label="Prompt" />
-  </div>
+  <PromptInputDemo />
 </ComponentPreview>
 
 ## Installation
@@ -27,13 +23,8 @@ A prompt field with attachment actions and a send control. Built from shadcn pri
 <ComponentInstall
   name="prompt-input"
   source="prompt-input/prompt-input.tsx"
-  target="components/ui/aloe/prompt-input.tsx"
-  registryDependencies={[
-    "button",
-    "dropdown-menu",
-    "input-group",
-    "textarea",
-  ]}
+  target="components/prompt-input.tsx"
+  registryDependencies={["input-group", "dropdown-menu"]}
   dependencies={["lucide-react"]}
   github="gochitashvili/aloe-ui/prompt-input"
 />
@@ -41,84 +32,85 @@ A prompt field with attachment actions and a send control. Built from shadcn pri
 ## Usage
 
 ```tsx
-import { PromptInput } from "@/components/ui/aloe/prompt-input"
-```
+import { PlusIcon, SendHorizontalIcon } from "lucide-react"
 
-```tsx
-<PromptInput placeholder="Ask anything…" />
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupTextarea,
+} from "@/components/ui/input-group"
+import { PromptInput } from "@/components/prompt-input"
+
+export function Example() {
+  return (
+    <PromptInput size="sm" variant="outline">
+      <InputGroup>
+        <InputGroupTextarea placeholder="Ask anything…" />
+        <InputGroupAddon align="block-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={<InputGroupButton size="icon-xs" aria-label="Add" />}
+            >
+              <PlusIcon />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuGroup>
+                <DropdownMenuItem>Upload files</DropdownMenuItem>
+                <DropdownMenuItem>Add context</DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <InputGroupButton className="ml-auto" size="icon-xs" aria-label="Send">
+            <SendHorizontalIcon />
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+    </PromptInput>
+  )
+}
 ```
 
 ## Composition
 
 ```txt
-PromptInput
-├── InputGroup
-│   ├── InputGroupTextarea
-│   ├── InputGroupAddon (start) → DropdownMenu + Button
-│   └── InputGroupAddon (end) → Button
+PromptInput                 ← div + size/variant
+└── InputGroup              ← composed outside
+    ├── InputGroupTextarea
+    └── InputGroupAddon
 ```
 
 ## Size
 
-Use the `size` prop to change the size of the prompt input.
-
 ### Small
 
 <ComponentPreview title="Size sm" code={promptInputSizeSm}>
-  <div className="w-full max-w-xl">
-    <PromptInput size="sm" aria-label="Prompt sm" />
-  </div>
-</ComponentPreview>
-
-### Default
-
-<ComponentPreview title="Size default" code={promptInputSizeDefault}>
-  <div className="w-full max-w-xl">
-    <PromptInput size="default" aria-label="Prompt default size" />
-  </div>
+  <PromptInputDemo size="sm" />
 </ComponentPreview>
 
 ### Large
 
 <ComponentPreview title="Size lg" code={promptInputSizeLg}>
-  <div className="w-full max-w-xl">
-    <PromptInput size="lg" aria-label="Prompt lg" />
-  </div>
+  <PromptInputDemo size="lg" />
 </ComponentPreview>
 
-## Default
+## Variant
 
-<ComponentPreview title="Default" code={promptInputDefault}>
-  <div className="w-full max-w-xl">
-    <PromptInput variant="default" aria-label="Prompt default" />
-  </div>
-</ComponentPreview>
-
-## Outline
+### Outline
 
 <ComponentPreview title="Outline" code={promptInputOutline}>
-  <div className="w-full max-w-xl">
-    <PromptInput variant="outline" aria-label="Prompt outline" />
-  </div>
+  <PromptInputDemo variant="outline" />
 </ComponentPreview>
 
-## Ghost
+### Ghost
 
 <ComponentPreview title="Ghost" code={promptInputGhost}>
-  <div className="w-full max-w-xl">
-    <PromptInput variant="ghost" aria-label="Prompt ghost" />
-  </div>
+  <PromptInputDemo variant="ghost" />
 </ComponentPreview>
-
-## API Reference
-
-### PromptInput
-
-| Prop | Type | Default |
-| --- | --- | --- |
-| `variant` | `"default" \| "outline" \| "ghost"` | `"default"` |
-| `size` | `"default" \| "sm" \| "lg"` | `"default"` |
-| `placeholder` | `string` | `"Ask anything…"` |
-| `disabled` | `boolean` | `false` |
-| `textareaProps` | `ComponentProps<typeof InputGroupTextarea>` | — |
-| `className` | `string` | — |

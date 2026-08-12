@@ -54,7 +54,7 @@ test("composeRootRegistry preserves identity for a synced registry", () => {
 })
 
 test("at least one registry item is defined", () => {
-  assert.ok(items.length > 0, "expected the registry to contain components")
+  assert.ok(items.length > 0, "expected the registry to contain items")
 })
 
 test("every included manifest exists and is valid JSON with items", () => {

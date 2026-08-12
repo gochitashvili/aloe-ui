@@ -52,7 +52,7 @@ Most kits hand you every option. Aloe UI picks a direction: spacing, interaction
 
 ## Quick start
 
-Install a component:
+Install a block:
 
 ```bash
 pnpm dlx shadcn@latest add @aloe-ui/prompt-input
@@ -64,21 +64,23 @@ Or pull straight from GitHub:
 pnpm dlx shadcn@latest add gochitashvili/aloe-ui/prompt-input
 ```
 
-## Components
+## AI Blocks
 
-| Component | Install | Description |
+| Block | Install | Description |
 | --- | --- | --- |
-| [Prompt Input](https://www.aloeui.com/docs/components/prompt-input) | `@aloe-ui/prompt-input` | Minimal text input for AI chat and prompt UIs |
+| [Prompt Input](https://www.aloeui.com/docs/components/prompt-input) | `@aloe-ui/prompt-input` | Reusable prompt shell; compose Input Group inside |
 
 ```tsx
-import { PromptInput } from "@/components/ui/aloe/prompt-input"
+import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
+import { PromptInput } from "@/components/prompt-input"
 
 export function Example() {
   return (
-    <PromptInput
-      placeholder="Ask anything…"
-      onChange={(event) => console.log(event.target.value)}
-    />
+    <PromptInput>
+      <InputGroup>
+        <InputGroupTextarea placeholder="Ask anything…" />
+      </InputGroup>
+    </PromptInput>
   )
 }
 ```
@@ -111,9 +113,9 @@ Connect the repo in the [Vercel dashboard](https://vercel.com/new). Framework is
 
 ## Contributing
 
-New components live under `registry/<name>/` with a `registry.json`, then get documented in `content/docs/components/`. Run `pnpm registry:build` before shipping registry changes.
+New registry items live under `registry/<name>/` with a `registry.json`, then get documented in `content/docs/`. Run `pnpm registry:build` before shipping registry changes.
 
-PRs that sharpen defaults, fix edge cases, or add tasteful components are welcome.
+PRs that sharpen defaults, fix edge cases, or add tasteful blocks are welcome.
 
 ## Links
 
