@@ -19,27 +19,24 @@ import {
 } from "@/components/ui/input-group"
 import { cn } from "@/lib/utils"
 
-const promptInputVariants = cva(
-  "h-auto w-full items-end",
-  {
-    variants: {
-      variant: {
-        default: "",
-        outline: "border-border bg-background dark:bg-background",
-        ghost: "border-transparent shadow-none dark:bg-transparent",
-      },
-      size: {
-        default: "has-[textarea]:min-h-16",
-        sm: "has-[textarea]:min-h-12",
-        lg: "has-[textarea]:min-h-20",
-      },
+const promptInputVariants = cva("h-auto w-full items-end", {
+  variants: {
+    variant: {
+      default: "",
+      outline: "border-border bg-background dark:bg-background",
+      ghost: "border-transparent shadow-none dark:bg-transparent",
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
+    size: {
+      default: "has-[textarea]:min-h-16",
+      sm: "has-[textarea]:min-h-12",
+      lg: "has-[textarea]:min-h-20",
     },
-  }
-)
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default",
+  },
+})
 
 type PromptInputProps = Omit<
   React.ComponentProps<typeof InputGroup>,
